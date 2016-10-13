@@ -2,7 +2,7 @@
 OVP Projects
 ==========
 
-.. image:: https://app.codeship.com/projects/---/status?branch=master
+.. image:: https://app.codeship.com/projects/01c71ae0-73a1-0134-6261-42bac1247deb/status?branch=master
 .. image:: https://codecov.io/gh/OpenVolunteeringPlatform/django-ovp-projects/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/OpenVolunteeringPlatform/django-ovp-projects
 
