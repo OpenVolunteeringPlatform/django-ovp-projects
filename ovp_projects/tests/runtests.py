@@ -103,7 +103,6 @@ settings.configure(
         },
     ],
     DEFAULT_SEND_EMAIL='sync',
-    AUTH_USER_MODEL='ovp_projects.User',
     REST_FRAMEWORK=REST_FRAMEWORK,
     AUTH_PASSWORD_VALIDATORS=AUTH_PASSWORD_VALIDATORS
 )
