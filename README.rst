@@ -20,8 +20,6 @@ Installing
 
 2. Add it to `INSTALLED_APPS` on `settings.py`
 
-3. Add `rest_framework_jwt` to `INSTALLED_APPS`
-
 
 Forking
 """"""""""""""

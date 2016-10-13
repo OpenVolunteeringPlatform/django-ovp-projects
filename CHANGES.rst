@@ -12,3 +12,4 @@ v0.1.0
 v0.1.1[unreleased]
 -----------
 * Include version badge to README.rst
+* Remove unneeded text from README.rst
