@@ -1,5 +1,5 @@
 codecov:
-  slug: "OpenVolunteeringPlatform/django-ovp-users"
+  slug: "OpenVolunteeringPlatform/django-ovp-projects"
   branch: master
   bot: leonardoarroyo
 
