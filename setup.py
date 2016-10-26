@@ -22,6 +22,7 @@ setup(
       'python-dateutil>=2.5.3,<2.6.0',
       'codecov>=2.0.5,<2.1.0',
       'coverage>=4.2,<4.3.0',
-      'ovp-core>=0.1.4,<1.0.0'
+      'ovp-core>=0.1.4,<1.0.0',
+      'ovp-uploads>=0.1.3,<1.0.0'
     ]
 )
