@@ -17,5 +17,9 @@ v0.1.1
 * Add image to project model
 * Drop distutils in favor of setuptools
 
+v0.1.1b
+-----------
+* Add .egg-info to gitignore
+
 v0.1.2[unreleased]
 -----------
