@@ -23,3 +23,4 @@ v0.1.1b
 
 v0.1.2[unreleased]
 -----------
+* TODO: Permission class pra criar project
