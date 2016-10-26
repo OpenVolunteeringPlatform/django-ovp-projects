@@ -23,7 +23,7 @@ v0.1.1b
 
 v0.1.2[unreleased]
 -----------
+* Return serialized image
 * TODO: Permission class pra criar project
 * TODO: Permission class pra editar project
 * TODO: Permission class owner or part of nonprofit
-* TODO: Return image info in response body

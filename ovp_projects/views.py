@@ -17,8 +17,10 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   lookup_value_regex = '[^/]+' # default is [^/.]+ - here we're allowing dots in the url slug field
 
   def get_serializer_class(self):
-    #if self.action == 'create':
-    return serializers.ProjectCreateSerializer
+    if self.action == "create":
+      return serializers.ProjectCreateSerializer
+
+    return serializers.ProjectSearchSerializer
 
   def create(self, request, *args, **kwargs):
     user = users_models.User.objects.all().first()
