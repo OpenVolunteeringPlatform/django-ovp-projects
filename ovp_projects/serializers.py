@@ -10,7 +10,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['id', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address']
     read_only_fields = ['highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
@@ -26,5 +26,5 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 class ProjectSearchSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Project
-    fields = ['id', 'name', 'slug', 'highlighted', 'published', 'published_date', 'created_date']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address']
     read_only_fields = ['highlighted', 'published', 'published_date', 'created_date']

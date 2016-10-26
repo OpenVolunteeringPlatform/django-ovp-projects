@@ -22,6 +22,7 @@ class Project(models.Model):
   """
   Project model
   """
+  image = models.ForeignKey('ovp_uploads.UploadedImage')
   address = models.OneToOneField('ovp_core.GoogleAddress', blank=True, null=True)
   skills = models.ManyToManyField('ovp_core.Skill')
   causes = models.ManyToManyField('ovp_core.Cause')
