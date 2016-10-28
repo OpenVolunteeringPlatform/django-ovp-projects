@@ -5,6 +5,8 @@ from ovp_core.serializers import GoogleAddressSerializer
 
 from ovp_uploads.serializers import UploadedImageSerializer
 
+from ovp_organizations.serializers import OrganizationSearchSerializer
+
 from rest_framework import serializers
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
@@ -12,7 +14,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization']
     read_only_fields = ['highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
@@ -28,8 +30,8 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 class ProjectSearchSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
   address = GoogleAddressSerializer()
+  organization = OrganizationSearchSerializer()
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address']
-    read_only_fields = ['highlighted', 'published', 'published_date', 'created_date']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization']
