@@ -26,8 +26,13 @@ v0.1.2
 * Return serialized image
 * Use correct user on project creation
 
-v0.1.3[unreleased]
+v0.1.3
 -----------
+* Add organization to project model
+
+v0.1.4[unreleased]
+-----------
+* Assert user owns organization
 * Implement job/work
 * Project apply
 * Email layouts
