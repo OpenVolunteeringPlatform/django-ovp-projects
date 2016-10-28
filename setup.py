@@ -3,12 +3,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='ovp-projects',
-    version='0.1.1b',
+    version='0.1.2',
     author=u'Atados',
     author_email='arroyo@atados.com.br',
     packages=find_packages(),
     url='https://github.com/OpenVolunteeringPlatform/django-ovp-projects',
-    download_url = 'https://github.com/OpenVolunteeringPlatform/django-ovp-projects/tarball/0.1.1b',
+    download_url = 'https://github.com/OpenVolunteeringPlatform/django-ovp-projects/tarball/0.1.2',
     license='AGPL',
     description='This module has core functionality for' + \
                 ' ovp projects, such as creation, editing' + \
