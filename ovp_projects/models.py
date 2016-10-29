@@ -29,6 +29,7 @@ class Project(models.Model):
 
   # Relationships
   owner = models.ForeignKey('ovp_users.User')
+  organization = models.ForeignKey('ovp_organizations.Organization')
   roles = models.ManyToManyField('Role', verbose_name=_("Roles"), blank=True)
 
   # Fields

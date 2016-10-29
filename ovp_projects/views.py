@@ -23,6 +23,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     return serializers.ProjectSearchSerializer
 
   def create(self, request, *args, **kwargs):
+<<<<<<< HEAD
     request_data = request.data.copy()
     request_data['owner'] = request.user.id
 
