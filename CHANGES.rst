@@ -33,8 +33,10 @@ v0.1.3
 v0.1.4[unreleased]
 -----------
 * Allows project.image to be nullable while still being required(fix issue with mysql)
+* Allows project.organization to be nullable while still being required(fix issue with mysql)
 
-todo
+
+[todo]
 * Assert user owns organization
 * Implement job/work
 * Project apply
