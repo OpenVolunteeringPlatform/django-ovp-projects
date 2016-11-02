@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='image',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='ovp_uploads.UploadedImage'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='ovp_uploads.UploadedImage'),
             preserve_default=False,
         ),
     ]
