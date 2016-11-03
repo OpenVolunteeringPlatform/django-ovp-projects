@@ -30,8 +30,12 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 class ProjectSearchSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
   address = GoogleAddressSerializer()
-  organization = OrganizationSearchSerializer()
+  #-- organization = OrganizationSearchSerializer()
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization']
+    # notice: should have only id or slug field 
+    fields = ['id', 'image', 'name', 'slug', 'description', 'highlighted', 'published_date', 'address']
+
+    #+- , 'owner', 'details', 'published', 'created_date', 'organization'
+
