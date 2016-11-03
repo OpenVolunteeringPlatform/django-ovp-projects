@@ -22,14 +22,14 @@ class Project(models.Model):
   """
   Project model
   """
-  image = models.ForeignKey('ovp_uploads.UploadedImage')
+  image = models.ForeignKey('ovp_uploads.UploadedImage', blank=False, null=True)
   address = models.OneToOneField('ovp_core.GoogleAddress', blank=True, null=True)
   skills = models.ManyToManyField('ovp_core.Skill')
   causes = models.ManyToManyField('ovp_core.Cause')
 
   # Relationships
   owner = models.ForeignKey('ovp_users.User')
-  organization = models.ForeignKey('ovp_organizations.Organization')
+  organization = models.ForeignKey('ovp_organizations.Organization', blank=False, null=True)
   roles = models.ManyToManyField('Role', verbose_name=_("Roles"), blank=True)
 
   # Fields
