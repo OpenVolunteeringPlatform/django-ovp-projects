@@ -36,6 +36,7 @@ v0.1.4[unreleased]
 * Allows project.organization to be nullable while still being required(fix issue with mysql)
 * Move models.py to separate files inside models/
 * Update datetime module to django timezone module on models
+* Remove id, details and organization from ProjectSearchSerializer and create ProjectRetrieveSerializer with such information
 
 
 [todo]
