@@ -19,7 +19,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_serializer_class(self):
     if self.action == 'create':
       return serializers.ProjectCreateSerializer
-    return serializers.ProjectSearchSerializer
+    return serializers.ProjectRetrieveSerializer
 
   def create(self, request, *args, **kwargs):
     user = users_models.User.objects.all().first()
