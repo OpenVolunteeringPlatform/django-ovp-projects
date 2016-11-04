@@ -60,11 +60,11 @@ class Project(models.Model):
     if self.pk is not None:
         orig = Project.objects.get(pk=self.pk)
         if not orig.published and self.published:
-          self.published_date = datetime.now()
+          self.published_date = timezone.now()
         if not orig.closed and self.closed:
-          self.closed_date = datetime.now()
+          self.closed_date = timezone.now()
         if not orig.deleted and self.deleted:
-          self.deleted_date = datetime.now()
+          self.deleted_date = timezone.now()
 
     # If there is no description, take 100 chars from the details
     if not self.description and len(self.details) > 100:
