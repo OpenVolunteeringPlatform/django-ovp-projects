@@ -30,7 +30,6 @@ class Availability(models.Model):
     verbose_name_plural = _('availabilities')
 
 
-
 class Work(models.Model):
   project = models.OneToOneField('Project', blank=True, null=True)
   availabilities = models.ManyToManyField('Availability')
@@ -39,7 +38,7 @@ class Work(models.Model):
   can_be_done_remotely = models.BooleanField(_('This work can be done remotely.'), default=False)
 
   def __str__(self):
-    return "%s horas por semana" % (self.weekly_hours)
+    return "%s hours per week" % (self.weekly_hours)
 
   class Meta:
     app_label = 'ovp_projects'
