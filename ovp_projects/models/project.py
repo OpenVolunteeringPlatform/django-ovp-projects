@@ -41,12 +41,10 @@ class Project(models.Model):
   Data methods
   '''
   def get_phone(self):
-# return resposible phone
-    pass
+    return self.owner.phone
 
   def get_email(self):
-# return resposible email
-    pass
+    return self.owner.email
 
   '''
   Model operation methods
