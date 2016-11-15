@@ -15,7 +15,7 @@ class Project(models.Model):
   # Relationships
   owner = models.ForeignKey('ovp_users.User')
   organization = models.ForeignKey('ovp_organizations.Organization', blank=False, null=True)
-  roles = models.ManyToManyField('Role', verbose_name=_("Roles"), blank=True)
+  roles = models.ManyToManyField('VolunteerRole', verbose_name=_("Volunteer Roles"), blank=True)
 
   # Fields
   name = models.CharField(_('Project name'), max_length=100)
@@ -83,9 +83,9 @@ class Project(models.Model):
     verbose_name_plural = _('projects')
 
 
-class Role(models.Model):
+class VolunteerRole(models.Model):
   """
-  Project roles model
+  Volunteer role model
   """
   name = models.CharField(_('Role name'), max_length=50, blank=True, null=True, default=None)
   prerequisites = models.TextField(_('Prerequisites'), max_length=1024, blank=True, null=True, default=None)
@@ -94,8 +94,8 @@ class Role(models.Model):
 
   class Meta:
     app_label = 'ovp_projects'
-    verbose_name = _('role')
-    verbose_name_plural = _('roles')
+    verbose_name = _('volunteer role')
+    verbose_name_plural = _('volunteer roles')
 
   def __str__(self):
     return  '%s - %s - %s (%s vacancies)' % (self.name, self.details, self.prerequisites, self.vacancies)
