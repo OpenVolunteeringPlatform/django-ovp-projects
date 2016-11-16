@@ -1,0 +1,1 @@
+New volunteer applied to {{apply.project.name}}.

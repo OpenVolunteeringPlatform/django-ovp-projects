@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from ovp_projects.models.apply import Apply
+from ovp_projects import emails
 
 
 class Project(models.Model):
@@ -39,6 +40,8 @@ class Project(models.Model):
   details = models.TextField(_('Details'), max_length=3000)
   description = models.TextField(_('Short description'), max_length=160, blank=True, null=True)
 
+  def mailing(self, async_mail=None):
+    return emails.ProjectMail(self, async_mail)
 
   '''
   Data methods
@@ -62,13 +65,20 @@ class Project(models.Model):
 
   def save(self, *args, **kwargs):
     if self.pk is not None:
-        orig = Project.objects.get(pk=self.pk)
-        if not orig.published and self.published:
-          self.published_date = timezone.now()
-        if not orig.closed and self.closed:
-          self.closed_date = timezone.now()
-        if not orig.deleted and self.deleted:
-          self.deleted_date = timezone.now()
+      orig = Project.objects.get(pk=self.pk)
+      if not orig.published and self.published:
+        self.published_date = timezone.now()
+        self.mailing().sendProjectPublished({'project': self})
+
+      if not orig.closed and self.closed:
+        self.closed_date = timezone.now()
+        self.mailing().sendProjectClosed({'project': self})
+
+      if not orig.deleted and self.deleted:
+        self.deleted_date = timezone.now()
+    else:
+      # Project being created
+      self.mailing().sendProjectCreated({'project': self})
 
     # If there is no description, take 100 chars from the details
     if not self.description and len(self.details) > 100:

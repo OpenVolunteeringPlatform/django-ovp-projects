@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
+from ovp_projects import emails
+
 class Apply(models.Model):
   user = models.ForeignKey('ovp_users.User', blank=True, null=True)
   project = models.ForeignKey('ovp_projects.Project')
@@ -11,13 +13,20 @@ class Apply(models.Model):
   canceled_date = models.DateTimeField(_("Canceled date"), blank=True, null=True)
   email = models.CharField(_('Email'), max_length=200, blank=True, null=True)
 
+  def mailing(self, async_mail=None):
+    return emails.ApplyMail(self, async_mail)
+
   def save(self, *args, **kwargs):
     if self.canceled:
       self.canceled_date = timezone.now()
       self.status = 'unapplied'
+      self.mailing().sendUnappliedToVolunteer({'apply': self})
+      self.mailing().sendUnappliedToOwner({'apply': self})
     else:
       self.canceled_date = None
       self.status = 'applied'
+      self.mailing().sendAppliedToVolunteer({'apply': self})
+      self.mailing().sendAppliedToOwner({'apply': self})
 
     return_data = super(Apply, self).save(*args, **kwargs)
 
