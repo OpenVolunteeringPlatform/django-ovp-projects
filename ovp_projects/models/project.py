@@ -22,7 +22,7 @@ class Project(models.Model):
 
   # Fields
   name = models.CharField(_('Project name'), max_length=100)
-  slug = models.SlugField(max_length=100, unique=True)
+  slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
   published = models.BooleanField(_("Published"), default=False)
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
   applied_count = models.IntegerField(blank=False, null=False, default=0)
