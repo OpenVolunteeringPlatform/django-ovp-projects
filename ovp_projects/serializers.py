@@ -15,7 +15,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Project
     fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization']
-    read_only_fields = ['highlighted', 'published', 'published_date', 'created_date']
+    read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
     address_data = validated_data.pop('address')

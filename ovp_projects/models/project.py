@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import slugify
 
 from ovp_projects.models.apply import Apply
 from ovp_projects import emails
@@ -78,6 +79,7 @@ class Project(models.Model):
         self.deleted_date = timezone.now()
     else:
       # Project being created
+      self.slug = self.generate_slug()
       self.mailing().sendProjectCreated({'project': self})
 
     # If there is no description, take 100 chars from the details
@@ -87,6 +89,20 @@ class Project(models.Model):
     self.modified_date = timezone.now()
 
     return super(Project, self).save(*args, **kwargs)
+
+  def generate_slug(self):
+    if self.name:
+      slug = slugify(self.name)[0:99]
+      append = ''
+      i = 0
+
+      query = Project.objects.filter(slug=slug + append)
+      while query.count() > 0:
+        i += 1
+        append = '-' + str(i)
+        query = Project.objects.filter(slug=slug + append)
+      return slug + append
+    return None
 
   def __str__(self):
       return  '%s' % (self.name)
