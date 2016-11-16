@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from ovp_projects.models.apply import Apply
+
 
 class Project(models.Model):
   """
@@ -22,6 +24,7 @@ class Project(models.Model):
   slug = models.SlugField(max_length=100, unique=True)
   published = models.BooleanField(_("Published"), default=False)
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
+  applied_count = models.IntegerField(blank=False, null=False, default=0)
 
   # Date fields
   published_date = models.DateTimeField(_("Published date"), blank=True, null=True)
@@ -45,6 +48,9 @@ class Project(models.Model):
 
   def get_email(self):
     return self.owner.email
+
+  def get_volunteers_numbers(self):
+    return Apply.objects.filter(project=self, canceled=False).count
 
   '''
   Model operation methods

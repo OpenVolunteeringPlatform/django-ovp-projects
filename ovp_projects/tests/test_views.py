@@ -96,19 +96,32 @@ class ApplyTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(user=user)
 
+    # Apply
     response = client.post(reverse('project-apply', ['test-slug']), format='json')
     self.assertTrue(response.data['detail'] == 'Successfully applied.')
     self.assertTrue(response.status_code == 200)
 
+    project = Project.objects.get(slug="test-slug")
+    self.assertTrue(project.applied_count == 1)
+
+    # Unapply
     response = client.post(reverse('project-unapply', ['test-slug']), format='json')
     self.assertTrue(response.data['detail'] == 'Successfully unapplied.')
+
     a = Apply.objects.last()
     self.assertTrue(a.canceled == True)
     self.assertTrue(a.canceled_date)
 
+    project = Project.objects.get(slug="test-slug")
+    self.assertTrue(project.applied_count == 0)
+
+    # Reapply
     response = client.post(reverse('project-apply', ['test-slug']), format='json')
     self.assertTrue(response.data['detail'] == 'Successfully applied.')
     self.assertTrue(response.status_code == 200)
+
+    project = Project.objects.get(slug="test-slug")
+    self.assertTrue(project.applied_count == 1)
 
     a = Apply.objects.last()
     self.assertTrue(a.canceled == False)

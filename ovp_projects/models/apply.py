@@ -21,11 +21,10 @@ class Apply(models.Model):
 
     return_data = super(Apply, self).save(*args, **kwargs)
 
-    # TODO: Implement applied count
     # Updating project applied_count
     # get_volunteers_numbers return a function, so ()()
-    # self.project.applied_count = self.project.get_volunteers_numbers()()
-    # self.project.save()
+    self.project.applied_count = self.project.get_volunteers_numbers()()
+    self.project.save()
 
     return return_data
 
