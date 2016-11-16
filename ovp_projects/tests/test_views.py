@@ -3,17 +3,18 @@
 # test is part of organization to create, edit
 # test must be owner to delete project
 
+# test unapply
+
 from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
-from ovp_projects.models import Project
+from ovp_projects.models import Project, Apply
 from ovp_users.models import User
 
 import json
-
 
 
 class ProjectResourceViewSetTestCase(TestCase):
@@ -83,6 +84,54 @@ class ApplyTestCase(TestCase):
 
     response = client.post(reverse('project-apply', ['test-slug']), format='json')
     self.assertTrue(response.data['non_field_errors'][0] == 'The fields email, project must make a unique set.')
+
+  def test_can_reapply_to_project(self):
+    """Assert that user can reapply to a project"""
+    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    project = Project(name="test project", slug="test-slug", details="abc", description="abc", owner=user)
+    project.save()
+
+    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    response = client.post(reverse('project-apply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    self.assertTrue(response.status_code == 200)
+
+    response = client.post(reverse('project-unapply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'Successfully unapplied.')
+    a = Apply.objects.last()
+    self.assertTrue(a.canceled == True)
+    self.assertTrue(a.canceled_date)
+
+    response = client.post(reverse('project-apply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    self.assertTrue(response.status_code == 200)
+
+    a = Apply.objects.last()
+    self.assertTrue(a.canceled == False)
+    self.assertTrue(a.canceled_date == None)
+
+  def test_cant_unapply_if_not_apply_or_unauthenticated(self):
+    """Assert that user can't unapply if not already applied or unauthenticated"""
+    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    project = Project(name="test project", slug="test-slug", details="abc", description="abc", owner=user)
+    project.save()
+
+    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+
+    client = APIClient()
+
+    response = client.post(reverse('project-unapply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'Authentication credentials were not provided.')
+    self.assertTrue(response.status_code == 401)
+
+    client.force_authenticate(user=user)
+    response = client.post(reverse('project-unapply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'This is user is not applied to this project.')
+    self.assertTrue(response.status_code == 400)
 
   def test_cant_apply_to_project_inexistent_project(self):
     """Assert that user can't apply to inexistent project"""

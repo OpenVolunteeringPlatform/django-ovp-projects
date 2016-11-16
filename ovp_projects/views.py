@@ -1,3 +1,5 @@
+from django.core.exceptions import ObjectDoesNotExist
+
 from ovp_projects import serializers
 from ovp_projects import models
 from ovp_projects import helpers
@@ -44,11 +46,30 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       data['email'] = user.email
       data['user'] = user.id
 
-    apply_sr = serializers.ApplyCreateSerializer(data=data, context=self.get_serializer_context())
-    apply_sr.is_valid(raise_exception=True)
-    apply_sr.save()
+    try:
+      existing_apply = models.Apply.objects.get(project=project, email=data['email'], canceled=True)
+      existing_apply.canceled = False
+      existing_apply.save()
+    except ObjectDoesNotExist:
+      apply_sr = serializers.ApplyCreateSerializer(data=data, context=self.get_serializer_context())
+      apply_sr.is_valid(raise_exception=True)
+      apply_sr.save()
 
     return response.Response({'detail': 'Successfully applied.'}, status=status.HTTP_200_OK)
+
+  @decorators.detail_route(['POST'])
+  def unapply(self, request, *args, **kwargs):
+    project = self.get_object()
+    user = request.user
+
+    try:
+      existing_apply = models.Apply.objects.get(project=project, email=user.email, canceled=False)
+      existing_apply.canceled = True
+      existing_apply.save()
+    except ObjectDoesNotExist:
+      return response.Response({'detail': 'This is user is not applied to this project.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return response.Response({'detail': 'Successfully unapplied.'}, status=status.HTTP_200_OK)
 
 
   # We need to override get_permissions and get_serializer_class to work
@@ -56,6 +77,9 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_permissions(self):
     request = self.get_serializer_context()['request']
     if self.action == 'create':
+      self.permission_classes = (permissions.IsAuthenticated, )
+
+    if self.action == 'unapply':
       self.permission_classes = (permissions.IsAuthenticated, )
 
     if self.action == 'apply':
@@ -73,7 +97,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_serializer_class(self):
     if self.action == 'create':
       return serializers.ProjectCreateSerializer
-    if self.action == 'apply':
+    if self.action in ['apply', 'unapply']:
       return serializers.ApplyCreateSerializer
 
     return serializers.ProjectRetrieveSerializer
