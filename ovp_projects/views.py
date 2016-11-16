@@ -51,7 +51,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       existing_apply.canceled = False
       existing_apply.save()
     except ObjectDoesNotExist:
-      apply_sr = serializers.ApplyCreateSerializer(data=data, context=self.get_serializer_context())
+      apply_sr = self.get_serializer_class()(data=data, context=self.get_serializer_context())
       apply_sr.is_valid(raise_exception=True)
       apply_sr.save()
 
