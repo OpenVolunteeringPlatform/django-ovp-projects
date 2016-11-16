@@ -4,6 +4,7 @@
 # test must be owner to delete project
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
@@ -12,6 +13,7 @@ from ovp_projects.models import Project
 from ovp_users.models import User
 
 import json
+
 
 
 class ProjectResourceViewSetTestCase(TestCase):
@@ -60,3 +62,62 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data['slug'] == data['slug'])
     self.assertTrue(response.data['details'] == data['details'])
     self.assertTrue(response.data['description'] == data['description'])
+
+
+
+class ApplyTestCase(TestCase):
+  def test_can_apply_to_project(self):
+    """Assert that authenticated user can apply to project"""
+    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    project = Project(name="test project", slug="test-slug", details="abc", description="abc", owner=user)
+    project.save()
+
+    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    response = client.post(reverse('project-apply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    self.assertTrue(response.status_code == 200)
+
+    response = client.post(reverse('project-apply', ['test-slug']), format='json')
+    self.assertTrue(response.data['non_field_errors'][0] == 'The fields email, project must make a unique set.')
+
+  def test_cant_apply_to_project_inexistent_project(self):
+    """Assert that user can't apply to inexistent project"""
+    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    response = client.post(reverse('project-apply', ['test-slug']), format='json')
+    self.assertTrue(response.data['detail'] == 'Not found.')
+    self.assertTrue(response.status_code == 404)
+
+
+  def test_unauthenticated_user_cant_apply_to_project(self):
+    """Assert that unauthenticated user cant apply to project"""
+    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    project = Project(name="test project", slug="test-slug", details="abc", description="abc", owner=user)
+    project.save()
+
+    client = APIClient()
+
+    response = client.post(reverse('project-apply', ['test-slug']), {'email': 'testemail@test.com'}, format='json')
+    self.assertTrue(response.data['detail'] == 'Authentication credentials were not provided.')
+    self.assertTrue(response.status_code == 401)
+
+
+  @override_settings(OVP_USERS={'UNAUTHENTICATED_APPLY': True})
+  def test_unauthenticated_user_can_apply_to_project(self):
+    """Assert that unauthenticated user can apply to project if properly configured"""
+    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    project = Project(name="test project", slug="test-slug", details="abc", description="abc", owner=user)
+    project.save()
+
+    client = APIClient()
+
+    response = client.post(reverse('project-apply', ['test-slug']), {'email': 'testemail@test.com'}, format='json')
+    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    self.assertTrue(response.status_code == 200)

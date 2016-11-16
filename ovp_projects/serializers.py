@@ -46,3 +46,10 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
     model = models.Project
     fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization']
 
+
+class ApplyCreateSerializer(serializers.ModelSerializer):
+  email = serializers.EmailField(required=False)
+
+  class Meta:
+    model = models.Apply
+    fields = ['email', 'project']
