@@ -3,8 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class JobDate(models.Model):
   name = models.CharField(_("Start date"), blank=True, null=True, max_length=20)
-  start_date = models.DateTimeField(_("Start date"), blank=True, null=True)
-  end_date = models.DateTimeField(_("End date"), blank=True, null=True)
+  start_date = models.DateTimeField(_("Start date"))
+  end_date = models.DateTimeField(_("End date"))
 
   class Meta:
     app_label = 'ovp_projects'

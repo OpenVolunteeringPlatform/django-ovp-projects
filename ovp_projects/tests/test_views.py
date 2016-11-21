@@ -15,36 +15,40 @@ from ovp_projects.models import Project, Apply
 from ovp_users.models import User
 
 import json
+import copy
 
+
+base_project = {"name": "test project", "slug": "test-cant-override-slug-on-creation", "details": "this is just a test project", "description": "the project is being tested", "address": {"typed_address": "r. tecainda, 81, sao paulo"}, "disponibility": {"type": "work", "work": {"description": "abc"}}}
 
 class ProjectResourceViewSetTestCase(TestCase):
   def test_cant_create_project_unauthenticated(self):
     """Assert that it's not possible to create a project while unauthenticated"""
     client = APIClient()
-    response = client.post(reverse('project-list'), {}, format='json')
+    response = client.post(reverse("project-list"), {}, format="json")
 
-    self.assertTrue(response.data['detail'] == 'Authentication credentials were not provided.')
+    self.assertTrue(response.data["detail"] == "Authentication credentials were not provided.")
     self.assertTrue(response.status_code == 401)
 
   def test_can_create_project(self):
     """Assert that it's possible to create a project while authenticated"""
     user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
 
+    data = copy.copy(base_project)
+
     client = APIClient()
     client.force_authenticate(user=user)
 
-    data = {'name': 'test project', 'slug': 'test-cant-override-slug-on-creation', 'details': 'this is just a test project', 'description': 'the project is being tested', 'address': {'typed_address': 'r. tecainda, 81, sao paulo'}}
-    response = client.post(reverse('project-list'), data, format='json')
+    response = client.post(reverse("project-list"), data, format="json")
 
-    self.assertTrue(response.data['id'])
-    self.assertTrue(response.data['name'] == data['name'])
-    self.assertTrue(response.data['slug'] == 'test-project')
-    self.assertTrue(response.data['details'] == data['details'])
-    self.assertTrue(response.data['description'] == data['description'])
+    self.assertTrue(response.data["id"])
+    self.assertTrue(response.data["name"] == data["name"])
+    self.assertTrue(response.data["slug"] == "test-project")
+    self.assertTrue(response.data["details"] == data["details"])
+    self.assertTrue(response.data["description"] == data["description"])
 
-    project = Project.objects.get(pk=response.data['id'])
+    project = Project.objects.get(pk=response.data["id"])
     self.assertTrue(project.owner.id == user.id)
-    self.assertTrue(project.address.typed_address == data['address']['typed_address'])
+    self.assertTrue(project.address.typed_address == data["address"]["typed_address"])
 
 
   def test_cant_create_project_empty_name(self):
@@ -54,9 +58,11 @@ class ProjectResourceViewSetTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(user=user)
 
-    data = {'name': '', 'details': 'this is just a test project', 'description': 'the project is being tested', 'address': {'typed_address': 'r. tecainda, 81, sao paulo'}}
-    response = client.post(reverse('project-list'), data, format='json')
-    self.assertTrue(response.data['name'][0] == "This field may not be blank.")
+    data = copy.copy(base_project)
+    data["name"] = ""
+
+    response = client.post(reverse("project-list"), data, format="json")
+    self.assertTrue(response.data["name"][0] == "This field may not be blank.")
 
 
   def test_project_retrieval(self):
@@ -66,59 +72,152 @@ class ProjectResourceViewSetTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(user=user)
 
-    data = {'name': 'test project', 'slug': 'test-cant-override-slug-on-creation', 'details': 'this is just a test project', 'description': 'the project is being tested', 'address': {'typed_address': 'r. tecainda, 81, sao paulo'}}
-    response = client.post(reverse('project-list'), data, format='json')
+    data = copy.copy(base_project)
+    response = client.post(reverse("project-list"), data, format="json")
 
-    response = client.get(reverse('project-detail', ['test-project']), format='json')
+    response = client.get(reverse("project-detail", ["test-project"]), format="json")
 
-    self.assertTrue(response.data['name'] == data['name'])
-    self.assertTrue(response.data['slug'] == 'test-project')
-    self.assertTrue(response.data['details'] == data['details'])
-    self.assertTrue(response.data['description'] == data['description'])
+    self.assertTrue(response.data["name"] == data["name"])
+    self.assertTrue(response.data["slug"] == "test-project")
+    self.assertTrue(response.data["details"] == data["details"])
+    self.assertTrue(response.data["description"] == data["description"])
+
+
+class DisponibilityTestCase(TestCase):
+  def setUp(self):
+    self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
+    self.data = copy.copy(base_project)
+    self.client = APIClient()
+    self.client.force_authenticate(user=self.user)
+
+  def test_no_disponibility(self):
+    """Test no disponibility returns error"""
+    del self.data["disponibility"]
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"] == ["This field is required."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_disponibility_type_required(self):
+    """Test disponibility type is required"""
+    self.data["disponibility"] = {}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["type"] == ["This field is required."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_empty_job_or_work(self):
+    """Test empty job or work returns error"""
+    self.data["disponibility"] = {"type": "job"}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["job"] == ["This field is required if type=\"job\"."])
+    self.assertTrue(response.status_code == 400)
+
+    self.data["disponibility"] = {"type": "work"}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["work"] == ["This field is required if type=\"work\"."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_work_description_required(self):
+    """Test work description is required"""
+    self.data["disponibility"] = {"type": "work", "work": {}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["work"]["description"] == ["This field is required."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_correct_work(self):
+    """Test correct work returns success"""
+    self.data["disponibility"] = {"type": "work", "work": {"description": "test desc", "weekly_hours": 6}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["type"] == "work")
+    self.assertTrue(response.data["disponibility"]["work"]["description"] == "test desc")
+    self.assertTrue(response.data["disponibility"]["work"]["weekly_hours"] == 6)
+    self.assertTrue(response.status_code == 201)
+
+  def test_job_dates_required(self):
+    """Test job dates is required"""
+    self.data["disponibility"] = {"type": "job", "job": {}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"] == ["This field is required."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_job_dates_cant_be_empty(self):
+    """Test job dates can't be empty"""
+    self.data["disponibility"] = {"type": "job", "job": {"dates": []}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"] == ["Must have at least one date."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_job_dates_cant_be_wrong_type(self):
+    """Test job dates can't be wrong type"""
+    self.data["disponibility"] = {"type": "job", "job": {"dates": ''}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"]["non_field_errors"] == ["Expected a list of items but got type \"str\"."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_job_dates_cant_have_bad_formatted_date(self):
+    """Test job dates can't have bad formatted date"""
+    self.data["disponibility"] = {"type": "job", "job": {"dates": [{"start_date": "abc", "end_date": "abc"}]}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][0]["start_date"] == ["Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]."])
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][0]["end_date"] == ["Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_job_returns_success(self):
+    """Test correct job returns success"""
+    self.data["disponibility"] = {"type": "job", "job": {"dates": [{"name": "test1", "start_date": "2013-01-29T12:34:56.123Z", "end_date": "2013-01-29T13:34:56.123Z"}, {"name": "test1", "start_date": "2013-02-01T12:34:56.123Z", "end_date": "2013-02-01T13:34:56.123Z"}]}}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 201)
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][0]["start_date"] == "2013-01-29T12:34:56.123000Z")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][0]["end_date"] == "2013-01-29T13:34:56.123000Z")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][1]["start_date"] == "2013-02-01T12:34:56.123000Z")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][1]["end_date"] == "2013-02-01T13:34:56.123000Z")
+
+    self.assertTrue(response.data["disponibility"]["job"]["start_date"] == "2013-01-29T12:34:56.123000Z")
+    self.assertTrue(response.data["disponibility"]["job"]["end_date"] == "2013-02-01T13:34:56.123000Z")
+
 
 
 
 class ApplyTestCase(TestCase):
   def test_can_apply_to_project(self):
     """Assert that authenticated user can apply to project"""
-    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
     project = Project(name="test project", details="abc", description="abc", owner=user)
     project.save()
 
-    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+    user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
 
     client = APIClient()
     client.force_authenticate(user=user)
 
-    response = client.post(reverse('project-apply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
-    response = client.post(reverse('project-apply', ['test-project']), format='json')
-    self.assertTrue(response.data['non_field_errors'][0] == 'The fields email, project must make a unique set.')
+    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["non_field_errors"][0] == "The fields email, project must make a unique set.")
 
   def test_can_reapply_to_project(self):
     """Assert that user can reapply to a project"""
-    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
     project = Project(name="test project", details="abc", description="abc", owner=user)
     project.save()
 
-    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+    user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
 
     client = APIClient()
     client.force_authenticate(user=user)
 
     # Apply
-    response = client.post(reverse('project-apply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
     project = Project.objects.get(slug="test-project")
     self.assertTrue(project.applied_count == 1)
 
     # Unapply
-    response = client.post(reverse('project-unapply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'Successfully unapplied.')
+    response = client.post(reverse("project-unapply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Successfully unapplied.")
 
     a = Apply.objects.last()
     self.assertTrue(a.canceled == True)
@@ -128,8 +227,8 @@ class ApplyTestCase(TestCase):
     self.assertTrue(project.applied_count == 0)
 
     # Reapply
-    response = client.post(reverse('project-apply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
     project = Project.objects.get(slug="test-project")
@@ -141,57 +240,57 @@ class ApplyTestCase(TestCase):
 
   def test_cant_unapply_if_not_apply_or_unauthenticated(self):
     """Assert that user can't unapply if not already applied or unauthenticated"""
-    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
     project = Project(name="test project", details="abc", description="abc", owner=user)
     project.save()
 
-    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+    user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
 
     client = APIClient()
 
-    response = client.post(reverse('project-unapply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'Authentication credentials were not provided.')
+    response = client.post(reverse("project-unapply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Authentication credentials were not provided.")
     self.assertTrue(response.status_code == 401)
 
     client.force_authenticate(user=user)
-    response = client.post(reverse('project-unapply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'This is user is not applied to this project.')
+    response = client.post(reverse("project-unapply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "This is user is not applied to this project.")
     self.assertTrue(response.status_code == 400)
 
   def test_cant_apply_to_project_inexistent_project(self):
     """Assert that user can't apply to inexistent project"""
-    user = User.objects.create_user(email='apply_user@gmail.com', password="apply_user")
+    user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
 
     client = APIClient()
     client.force_authenticate(user=user)
 
-    response = client.post(reverse('project-apply', ['test-project']), format='json')
-    self.assertTrue(response.data['detail'] == 'Not found.')
+    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Not found.")
     self.assertTrue(response.status_code == 404)
 
 
   def test_unauthenticated_user_cant_apply_to_project(self):
     """Assert that unauthenticated user cant apply to project"""
-    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
     project = Project(name="test project", details="abc", description="abc", owner=user)
     project.save()
 
     client = APIClient()
 
-    response = client.post(reverse('project-apply', ['test-project']), {'email': 'testemail@test.com'}, format='json')
-    self.assertTrue(response.data['detail'] == 'Authentication credentials were not provided.')
+    response = client.post(reverse("project-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
+    self.assertTrue(response.data["detail"] == "Authentication credentials were not provided.")
     self.assertTrue(response.status_code == 401)
 
 
-  @override_settings(OVP_USERS={'UNAUTHENTICATED_APPLY': True})
+  @override_settings(OVP_USERS={"UNAUTHENTICATED_APPLY": True})
   def test_unauthenticated_user_can_apply_to_project(self):
     """Assert that unauthenticated user can apply to project if properly configured"""
-    user = User.objects.create_user(email='owner_user@gmail.com', password="test_owner")
+    user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
     project = Project(name="test project", details="abc", description="abc", owner=user)
     project.save()
 
     client = APIClient()
 
-    response = client.post(reverse('project-apply', ['test-project']), {'email': 'testemail@test.com'}, format='json')
-    self.assertTrue(response.data['detail'] == 'Successfully applied.')
+    response = client.post(reverse("project-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
+    self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)

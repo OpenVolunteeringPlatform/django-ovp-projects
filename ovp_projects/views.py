@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 
-from ovp_projects import serializers
+from ovp_projects.serializers import project as serializers
 from ovp_projects import models
 from ovp_projects import helpers
 
