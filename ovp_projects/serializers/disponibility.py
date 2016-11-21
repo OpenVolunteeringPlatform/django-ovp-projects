@@ -57,7 +57,7 @@ def add_disponibility_representation(func):
       try:
         type = "work"
         obj = WorkSerializer().to_representation(instance.work)
-      except models.Work.DoesNotExist:
+      except models.Work.DoesNotExist: # pragma: no cover
         pass
 
     if obj:
