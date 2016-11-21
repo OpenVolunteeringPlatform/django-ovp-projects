@@ -12,9 +12,6 @@ from functools import wraps
 Validators
 """
 def disponibility_validate(disponibility):
-  if 'type' not in disponibility:
-    raise serializers.ValidationError({'type': ["This field is required."]})
-
   if disponibility['type'] not in ['work', 'job']:
     raise serializers.ValidationError({'type': ["Must have either be 'work' or 'job'."]})
   else:
