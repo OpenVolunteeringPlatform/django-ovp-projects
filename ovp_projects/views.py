@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ovp_projects.serializers import project as serializers
 from ovp_projects import models
 from ovp_projects import helpers
+from ovp_projects.permissions import OwnsOrIsOrganizationMember
 
 from ovp_users import models as users_models
 
@@ -77,7 +78,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_permissions(self):
     request = self.get_serializer_context()['request']
     if self.action == 'create':
-      self.permission_classes = (permissions.IsAuthenticated, )
+      self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
 
     if self.action == 'unapply':
       self.permission_classes = (permissions.IsAuthenticated, )

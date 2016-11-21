@@ -1,4 +1,5 @@
 from ovp_projects import models
+from ovp_projects import helpers
 from ovp_projects.serializers.disponibility import DisponibilitySerializer, add_disponibility_representation
 from ovp_projects.serializers.job import JobSerializer
 from ovp_projects.serializers.work import WorkSerializer
@@ -10,16 +11,29 @@ from ovp_core.serializers import GoogleAddressSerializer
 from ovp_uploads.serializers import UploadedImageSerializer
 
 from ovp_organizations.serializers import OrganizationSearchSerializer
+from ovp_organizations.models import Organization
 
 from rest_framework import serializers
+from rest_framework import exceptions
+
+""" Validators """
+def organization_validator(data):
+  settings = helpers.get_settings()
+  allow_no_org = settings.get('CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION', False)
+
+  if not allow_no_org:
+    pk = data.get('organization', None)
+
+    if not pk:
+      raise exceptions.ValidationError({'organization': ['This field is required.']})
 
 
+""" Serializers """
 class ProjectCreateSerializer(serializers.ModelSerializer):
   address = GoogleAddressSerializer(
       validators=[core_validators.address_validate]
     )
-  disponibility = DisponibilitySerializer(
-    )
+  disponibility = DisponibilitySerializer()
 
   class Meta:
     model = models.Project
@@ -54,6 +68,8 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 
     return project
 
+  def get_validators(self):
+    return super(ProjectCreateSerializer, self).get_validators() + [organization_validator]
 
   @add_disponibility_representation
   def to_representation(self, instance):

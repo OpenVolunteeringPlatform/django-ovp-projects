@@ -13,6 +13,7 @@ from rest_framework.test import APIClient
 
 from ovp_projects.models import Project, Apply
 from ovp_users.models import User
+from ovp_organizations.models import Organization
 
 import json
 import copy
@@ -81,6 +82,48 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data["slug"] == "test-project")
     self.assertTrue(response.data["details"] == data["details"])
     self.assertTrue(response.data["description"] == data["description"])
+
+
+@override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": False})
+class ProjectWithOrganizationTestCase(TestCase):
+  def setUp(self):
+    self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
+    self.another_user = User.objects.create_user(email="test_another_user@test.com", password="testcancreate")
+    self.data = copy.copy(base_project)
+    self.client = APIClient()
+    self.client.force_authenticate(user=self.user)
+
+  def test_no_organization(self):
+    """Test no organization returns error"""
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["organization"] == ["This field is required."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_organization_is_int(self):
+    """Test organization field must be int"""
+    self.data['organization'] = 'str'
+
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["organization"] == ["Incorrect type. Expected pk value, received str."])
+    self.assertTrue(response.status_code == 400)
+
+  def test_user_is_owner_or_member(self):
+    """Test user is owner or member of organization"""
+    wrong_org = Organization(name="test", type=0, owner=self.another_user)
+    wrong_org.save()
+
+    self.data['organization'] = wrong_org.pk
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 403)
+
+  def test_can_create(self):
+    """Test user can create project with valid organization"""
+    org = Organization(name="test", type=0, owner=self.user)
+    org.save()
+
+    self.data['organization'] = org.pk
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 201)
 
 
 class DisponibilityTestCase(TestCase):
