@@ -60,14 +60,6 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
     return super(ProjectCreateSerializer, self).to_representation(instance)
 
 
-class ProjectSearchSerializer(serializers.ModelSerializer):
-  image = UploadedImageSerializer()
-  address = GoogleAddressSerializer()
-
-  class Meta:
-    model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address']
-
 
 class ProjectRetrieveSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
@@ -82,6 +74,16 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   @add_disponibility_representation
   def to_representation(self, instance):
     return super(ProjectRetrieveSerializer, self).to_representation(instance)
+
+
+class ProjectSearchSerializer(serializers.ModelSerializer):
+  image = UploadedImageSerializer()
+  address = GoogleAddressSerializer()
+
+  class Meta:
+    model = models.Project
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address']
+
 
 
 class ApplyCreateSerializer(serializers.ModelSerializer):
