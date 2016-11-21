@@ -3,9 +3,12 @@
 
 
 from django.test import TestCase
+from django.utils import timezone
 
 from ovp_projects.models import Project
 from ovp_projects.models import VolunteerRole
+from ovp_projects.models import Work
+from ovp_projects.models import Job
 from ovp_users.models import User
 
 class ProjectModelTestCase(TestCase):
@@ -114,8 +117,28 @@ class ProjectModelTestCase(TestCase):
 
 class VolunteerRoleModelTestCase(TestCase):
   def test_str_method_returns_role_info(self):
-    """ Assert that .__str__() method returns role info """
+    """ Assert that VolunteerRole.__str__() method returns role info """
     role = VolunteerRole(name="test role", details="a", prerequisites="b", vacancies=5)
     role.save()
 
     self.assertTrue(role.__str__() == "test role - a - b (5 vacancies)")
+
+
+class WorkModelTestCase(TestCase):
+  def test_str_method_returns_work_info(self):
+    """ Assert that Work.__str__() method returns hours per week """
+    work = Work(weekly_hours=4, description="abc")
+    work.save()
+
+    self.assertTrue(work.__str__() == "4 hours per week")
+
+
+class JobModelTestCase(TestCase):
+  def test_str_method_returns_job_info(self):
+    """ Assert that Job.__str__() method returns .start_date and .end_date """
+    start = timezone.now()
+    end = timezone.now()
+    job = Job(start_date=start, end_date=end)
+    job.save()
+
+    self.assertTrue(job.__str__() == "{} - {}".format(start, end))

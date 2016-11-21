@@ -20,7 +20,7 @@ class Job(models.Model):
   dates = models.ManyToManyField('JobDate', blank=True)
 
   def __str__(self):
-    return "%s - %s" % (self.start_date, self.end_date)
+    return "{} - {}".format(self.start_date, self.end_date)
 
   def update_dates(self):
     start = self.dates.all().order_by('start_date').first().start_date
