@@ -43,6 +43,4 @@ class JobSerializer(serializers.ModelSerializer):
       job.dates.add(date_obj)
     job.update_dates()
 
-    print(job.dates)
-
     return job
