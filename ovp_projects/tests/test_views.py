@@ -104,6 +104,13 @@ class DisponibilityTestCase(TestCase):
     self.assertTrue(response.data["disponibility"]["type"] == ["This field is required."])
     self.assertTrue(response.status_code == 400)
 
+  def test_type_not_work_or_job(self):
+    """Test disponibility type can't be different than work or job"""
+    self.data["disponibility"] = {"type": "test"}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["disponibility"]["type"] == ["Must have either be 'work' or 'job'."])
+    self.assertTrue(response.status_code == 400)
+
   def test_empty_job_or_work(self):
     """Test empty job or work returns error"""
     self.data["disponibility"] = {"type": "job"}
