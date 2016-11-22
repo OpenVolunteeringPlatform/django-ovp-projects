@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ovp_projects.serializers import project as serializers
 from ovp_projects import models
 from ovp_projects import helpers
-from ovp_projects.permissions import OwnsOrIsOrganizationMember
+from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember, OwnsOrIsOrganizationMember
 
 from ovp_users import models as users_models
 
@@ -72,12 +72,24 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     return response.Response({'detail': 'Successfully unapplied.'}, status=status.HTTP_200_OK)
 
+  @decorators.detail_route(['GET'])
+  def applies(self, request, *arg, **kwargs):
+    project = self.get_object()
+    applies = models.Apply.objects.filter(project=project)
+
+    serializer = serializers.ApplyRetrieveSerializer(applies, many=True)
+
+    return response.Response(serializer.data)
+
 
   # We need to override get_permissions and get_serializer_class to work
   # with multiple serializers and permissions
   def get_permissions(self):
     request = self.get_serializer_context()['request']
     if self.action == 'create':
+      self.permission_classes = (permissions.IsAuthenticated, ProjectCreateOwnsOrIsOrganizationMember, )
+
+    if self.action == 'applies':
       self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
 
     if self.action == 'unapply':
@@ -98,6 +110,8 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_serializer_class(self):
     if self.action == 'create':
       return serializers.ProjectCreateSerializer
+    if self.action == 'applies':
+      return serializers.ApplyRetrieveSerializer
     if self.action in ['apply', 'unapply']:
       return serializers.ApplyCreateSerializer
 

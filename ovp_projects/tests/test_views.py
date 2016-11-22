@@ -274,6 +274,7 @@ class ApplyTestCase(TestCase):
     response = client.post(reverse("project-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["non_field_errors"][0] == "The fields email, project must make a unique set.")
 
+
   def test_can_reapply_to_project(self):
     """Assert that user can reapply to a project"""
     user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
@@ -335,7 +336,7 @@ class ApplyTestCase(TestCase):
     self.assertTrue(response.data["detail"] == "This is user is not applied to this project.")
     self.assertTrue(response.status_code == 400)
 
-  def test_cant_apply_to_project_inexistent_project(self):
+  def test_cant_apply_to_inexistent_project(self):
     """Assert that user can't apply to inexistent project"""
     user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
 
@@ -372,3 +373,31 @@ class ApplyTestCase(TestCase):
     response = client.post(reverse("project-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
+
+
+  def test_can_read_applies(self):
+    """Assert that organization member can view project applies"""
+    owner = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
+    project = Project(name="test project", details="abc", description="abc", owner=owner)
+    project.save()
+
+    user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Successfully applied.")
+    self.assertTrue(response.status_code == 200)
+
+
+    client = APIClient()
+    client.force_authenticate(user=owner)
+    response = client.get(reverse("project-applies", ["test-project"]), format="json")
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(len(response.data) == 1)
+
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.get(reverse("project-applies", ["test-project"]), format="json")
+    self.assertTrue(response.status_code == 403)

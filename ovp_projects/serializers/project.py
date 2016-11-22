@@ -119,3 +119,9 @@ class ApplyCreateSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Apply
     fields = ['email', 'project']
+
+
+class ApplyRetrieveSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = models.Apply
+    fields = ['email', 'date', 'canceled', 'canceled_date', 'status']
