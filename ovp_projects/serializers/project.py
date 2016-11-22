@@ -3,6 +3,7 @@ from ovp_projects import helpers
 from ovp_projects.serializers.disponibility import DisponibilitySerializer, add_disponibility_representation
 from ovp_projects.serializers.job import JobSerializer
 from ovp_projects.serializers.work import WorkSerializer
+from ovp_projects.serializers.role import VolunteerRoleSerializer
 
 from ovp_core import models as core_models
 from ovp_core import validators as core_validators
@@ -34,10 +35,11 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
       validators=[core_validators.address_validate]
     )
   disponibility = DisponibilitySerializer()
+  roles = VolunteerRoleSerializer(many=True, required=False)
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles']
     read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
@@ -47,11 +49,19 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
     address = address_sr.create(address_data)
     validated_data['address'] = address
 
-    # Disponibility
-    disp = validated_data.pop('disponibility', {}) # we gotta pop before creating project
+    # We gotta pop some fields before creating project
+    roles = validated_data.pop('roles', [])
+    disp = validated_data.pop('disponibility', {})
 
     # Create project
     project = models.Project.objects.create(**validated_data)
+
+    # Roles
+    for role_data in roles:
+      role_sr = VolunteerRoleSerializer(data=role_data)
+      role = role_sr.create(role_data)
+      project.roles.add(role)
+
 
     # Disponibility
     if disp['type'] == 'work':
@@ -82,10 +92,11 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   address = GoogleAddressSerializer()
   organization = OrganizationSearchSerializer()
   disponibility = DisponibilitySerializer()
+  roles = VolunteerRoleSerializer(many=True)
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles']
 
   @add_disponibility_representation
   def to_representation(self, instance):

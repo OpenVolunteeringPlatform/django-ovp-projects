@@ -226,6 +226,34 @@ class DisponibilityTestCase(TestCase):
 
 
 
+class VolunteerRoleTestCase(TestCase):
+  def setUp(self):
+    self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
+    self.data = copy.copy(base_project)
+    self.client = APIClient()
+    self.client.force_authenticate(user=self.user)
+
+
+  def test_roles_is_correct_type(self):
+    """Test roles is correct type"""
+    self.data["roles"] = {"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5}
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.data["roles"]["non_field_errors"] == ["Expected a list of items but got type \"dict\"."])
+    self.assertTrue(response.status_code == 400)
+
+
+  def test_roles_get_saved(self):
+    """Test roles get saved"""
+    self.data["roles"] = [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5}]
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 201)
+    self.assertTrue(response.data["roles"] == self.data["roles"])
+
+    response = self.client.get(reverse("project-detail", ['test-project']), format="json")
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["roles"] == self.data["roles"])
+
+
 
 class ApplyTestCase(TestCase):
   def test_can_apply_to_project(self):
