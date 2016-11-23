@@ -57,7 +57,7 @@ class ApplyMail(BaseMail):
     """
     Sent to user when he unapplies from a project
     """
-    return self.sendEmail('volunteerUnpplied-ToVolunteer', 'Unapplied from project', context)
+    return self.sendEmail('volunteerUnapplied-ToVolunteer', 'Unapplied from project', context)
 
 
   def sendUnappliedToOwner(self, context={}):
@@ -65,4 +65,4 @@ class ApplyMail(BaseMail):
     Sent to project owner when user unapplies from a project
     """
     super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async)
-    return self.sendEmail('volunteerUnpplied-ToOwner', 'Volunteer unapplied from project', context)
+    return self.sendEmail('volunteerUnapplied-ToOwner', 'Volunteer unapplied from project', context)
