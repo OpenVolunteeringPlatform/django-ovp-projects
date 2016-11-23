@@ -50,3 +50,8 @@ v1.0.0
 * Automatic slug on project creation
 * Add close_finished_projects command
 * Release as stable (YAY \o/)
+
+v1.0.1
+-----------
+* Fix mistyped template name
+* Include test for project update
