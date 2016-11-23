@@ -171,6 +171,14 @@ class ProjectResourceUpdateTestCase(TestCase):
     self.assertTrue(response.data["disponibility"]["type"] == "job")
     self.assertTrue(response.data["disponibility"]["job"]["dates"][0]["name"] == "update")
 
+
+    updated_project = {"disponibility": {"type": "work", "work": {"description": "update"}}}
+    response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
+
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["disponibility"]["type"] == "work")
+    self.assertTrue(response.data["disponibility"]["work"]["description"] == "update")
+
   def test_update_roles(self):
     """Test patch request update roles resource"""
     updated_project = {"roles": [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5}]}

@@ -89,7 +89,9 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     # Iterate and save fields as drf default
     info = model_meta.get_field_info(instance)
     for attr, value in validated_data.items():
-      if attr in info.relations and info.relations[attr].to_many:
+      # The following line is not covered because the current model does not implement
+      # any many-to-many(except for roles, which is manually implemented)
+      if attr in info.relations and info.relations[attr].to_many: # pragma: no cover
         set_many(instance, attr, value)
       else:
         setattr(instance, attr, value)
