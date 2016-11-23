@@ -55,3 +55,7 @@ v1.0.1
 -----------
 * Fix mistyped template name
 * Include test for project update
+
+v1.0.2
+-----------
+* Include templates as package data
