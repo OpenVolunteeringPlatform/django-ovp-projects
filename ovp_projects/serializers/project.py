@@ -16,6 +16,8 @@ from ovp_organizations.models import Organization
 
 from rest_framework import serializers
 from rest_framework import exceptions
+from rest_framework.compat import set_many
+from rest_framework.utils import model_meta
 
 """ Validators """
 def organization_validator(data):
@@ -30,7 +32,7 @@ def organization_validator(data):
 
 
 """ Serializers """
-class ProjectCreateSerializer(serializers.ModelSerializer):
+class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
   address = GoogleAddressSerializer(
       validators=[core_validators.address_validate]
     )
@@ -78,12 +80,59 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 
     return project
 
+
+  def update(self, instance, validated_data):
+    address_data = validated_data.pop('address', None)
+    roles = validated_data.pop('roles', None)
+    disp = validated_data.pop('disponibility', None)
+
+    # Iterate and save fields as drf default
+    info = model_meta.get_field_info(instance)
+    for attr, value in validated_data.items():
+      if attr in info.relations and info.relations[attr].to_many:
+        set_many(instance, attr, value)
+      else:
+        setattr(instance, attr, value)
+
+    # Save related resources
+    if address_data:
+      address_sr = GoogleAddressSerializer(data=address_data)
+      address = address_sr.create(address_data)
+      instance.address = address
+
+    if roles:
+      instance.roles.clear()
+      for role_data in roles:
+        role_sr = VolunteerRoleSerializer(data=role_data)
+        role = role_sr.create(role_data)
+        instance.roles.add(role)
+
+    if disp:
+      models.Work.objects.filter(project=instance).delete()
+      models.Job.objects.filter(project=instance).delete()
+
+      if disp['type'] == 'work':
+        work_data = disp['work']
+        work_data['project'] = instance
+        work_sr = WorkSerializer(data=work_data)
+        work = work_sr.create(work_data)
+
+      if disp['type'] == 'job':
+        job_data = disp['job']
+        job_data['project'] = instance
+        job_sr = JobSerializer(data=job_data)
+        job = job_sr.create(job_data)
+
+    instance.save()
+
+    return instance
+
   def get_validators(self):
-    return super(ProjectCreateSerializer, self).get_validators() + [organization_validator]
+    return super(ProjectCreateUpdateSerializer, self).get_validators() + [organization_validator]
 
   @add_disponibility_representation
   def to_representation(self, instance):
-    return super(ProjectCreateSerializer, self).to_representation(instance)
+    return super(ProjectCreateUpdateSerializer, self).to_representation(instance)
 
 
 

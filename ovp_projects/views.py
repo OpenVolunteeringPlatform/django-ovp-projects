@@ -34,6 +34,19 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+  def partial_update(self, request, *args, **kwargs):
+    """ We do not include the mixin as we want only PATCH and no PUT """
+    instance = self.get_object()
+    serializer = self.get_serializer(instance, data=request.data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    if getattr(instance, '_prefetched_objects_cache', None): #pragma: no cover
+      instance = self.get_object()
+      serializer = self.get_serializer(instance)
+
+    return response.Response(serializer.data)
+
   @decorators.detail_route(['POST'])
   def apply(self, request, *args, **kwargs):
     data = request.data
@@ -89,7 +102,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     if self.action == 'create':
       self.permission_classes = (permissions.IsAuthenticated, ProjectCreateOwnsOrIsOrganizationMember, )
 
-    if self.action == 'applies':
+    if self.action in ['applies', 'partial_update']:
       self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
 
     if self.action == 'unapply':
@@ -108,11 +121,11 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     return super(ProjectResourceViewSet, self).get_permissions()
 
   def get_serializer_class(self):
-    if self.action == 'create':
-      return serializers.ProjectCreateSerializer
-    if self.action == 'applies':
-      return serializers.ApplyRetrieveSerializer
+    if self.action in ['create', 'partial_update']:
+      return serializers.ProjectCreateUpdateSerializer
     if self.action in ['apply', 'unapply']:
       return serializers.ApplyCreateSerializer
+    if self.action == 'applies':
+      return serializers.ApplyRetrieveSerializer
 
     return serializers.ProjectRetrieveSerializer

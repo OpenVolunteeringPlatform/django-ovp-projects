@@ -126,6 +126,60 @@ class ProjectWithOrganizationTestCase(TestCase):
     self.assertTrue(response.status_code == 201)
 
 
+class ProjectResourceUpdateTestCase(TestCase):
+  def setUp(self):
+    self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
+    self.data = copy.copy(base_project)
+    self.client = APIClient()
+    self.client.force_authenticate(user=self.user)
+
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 201)
+
+  def test_wrong_user_cant_update(self):
+    """Test only owner can update project"""
+    wrong_user = User.objects.create_user(email="wrong_user@gmail.com", password="testcancreate")
+    wrong_user.save()
+    self.client.force_authenticate(user=wrong_user)
+
+    response = self.client.patch(reverse("project-detail", ["test-project"]), {}, format="json")
+    self.assertTrue(response.status_code == 403)
+
+  def test_update_fields(self):
+    """Test patch request update fields"""
+    updated_project = {"name": "test update", "details": "update", "description": "update"}
+    response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["name"] == "test update")
+    self.assertTrue(response.data["details"] == "update")
+    self.assertTrue(response.data["description"] == "update")
+
+  def test_update_address(self):
+    """Test patch request update address resource"""
+    updated_project = {"address": {"typed_address": "r. capote valente, 701, sao paulo"}}
+    response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
+
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["address"]["typed_address"] == "r. capote valente, 701, sao paulo")
+
+  def test_update_disponibility(self):
+    """Test patch request update disponibility resource"""
+    updated_project = {"disponibility": {"type": "job", "job": {"dates": [{"name": "update", "start_date": "2013-01-29T12:34:56.123Z", "end_date": "2013-01-29T13:34:56.123Z"}, {"name": "test1", "start_date": "2013-02-01T12:34:56.123Z", "end_date": "2013-02-01T13:34:56.123Z"}]}}}
+    response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
+
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["disponibility"]["type"] == "job")
+    self.assertTrue(response.data["disponibility"]["job"]["dates"][0]["name"] == "update")
+
+  def test_update_roles(self):
+    """Test patch request update roles resource"""
+    updated_project = {"roles": [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5}]}
+    response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
+
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["roles"] == updated_project["roles"])
+
+
 class DisponibilityTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
