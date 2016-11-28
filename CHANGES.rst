@@ -59,3 +59,7 @@ v1.0.1
 v1.0.2
 -----------
 * Include templates as package data
+
+v1.0.3
+-----------
+* Add can_be_done_remotely to Work model
