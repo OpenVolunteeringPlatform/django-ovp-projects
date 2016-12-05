@@ -7,7 +7,7 @@ from ovp_projects.serializers.role import VolunteerRoleSerializer
 
 from ovp_core import models as core_models
 from ovp_core import validators as core_validators
-from ovp_core.serializers import GoogleAddressSerializer, GoogleAddressLatLngSerializer
+from ovp_core.serializers import GoogleAddressSerializer, GoogleAddressLatLngSerializer, GoogleAddressCityStateSerializer
 
 from ovp_uploads.serializers import UploadedImageSerializer
 
@@ -154,13 +154,22 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
     return super(ProjectRetrieveSerializer, self).to_representation(instance)
 
 
+class CompactOrganizationSerializer(serializers.ModelSerializer):
+  address = GoogleAddressCityStateSerializer()
+
+  class Meta:
+    model = Organization
+    fields = ['name', 'address']
+
+
 class ProjectSearchSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
   address = GoogleAddressSerializer()
+  organization = CompactOrganizationSerializer()
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization']
 
 
 
