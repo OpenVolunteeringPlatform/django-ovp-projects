@@ -67,3 +67,7 @@ v1.0.3
 v1.0.4
 -----------
 * Add lat and lng to address on Project retrieval
+
+v1.0.5
+-----------
+* Add organization to ProjectSearchSerializer
