@@ -7,7 +7,7 @@ from ovp_projects.serializers.role import VolunteerRoleSerializer
 
 from ovp_core import models as core_models
 from ovp_core import validators as core_validators
-from ovp_core.serializers import GoogleAddressSerializer
+from ovp_core.serializers import GoogleAddressSerializer, GoogleAddressLatLngSerializer
 
 from ovp_uploads.serializers import UploadedImageSerializer
 
@@ -140,7 +140,7 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
 
 class ProjectRetrieveSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
-  address = GoogleAddressSerializer()
+  address = GoogleAddressLatLngSerializer()
   organization = OrganizationSearchSerializer()
   disponibility = DisponibilitySerializer()
   roles = VolunteerRoleSerializer(many=True)

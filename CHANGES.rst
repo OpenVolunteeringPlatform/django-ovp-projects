@@ -63,3 +63,7 @@ v1.0.2
 v1.0.3
 -----------
 * Add can_be_done_remotely to Work model
+
+v1.0.4
+-----------
+* Add lat and lng to address on Project retrieval
