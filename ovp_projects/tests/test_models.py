@@ -85,7 +85,7 @@ class ProjectModelTestCase(TestCase):
     self.assertTrue(project.__str__() == "test str")
 
   def test_slug_generation_on_create(self):
-    """ Assert that slug gets overriden on project creation """
+    """ Assert that slug is generated on create """
     user = User.objects.create_user(email="test_str@test.com", password="test_str_test")
     project = Project(name="test slug", slug="another-slug", details="abc", owner=user)
     project.save()
@@ -93,7 +93,7 @@ class ProjectModelTestCase(TestCase):
     self.assertTrue(project.slug == "test-slug")
 
   def test_slug_doesnt_repeat(self):
-    """ Assert that slug gets overriden on project creation """
+    """ Assert that slug does not repeat """
     user = User.objects.create_user(email="test_str@test.com", password="test_str_test")
     project = Project(name="test slug", details="abc", owner=user)
     project.save()
