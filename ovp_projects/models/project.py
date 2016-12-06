@@ -83,8 +83,11 @@ class Project(models.Model):
       self.mailing().sendProjectCreated({'project': self})
 
     # If there is no description, take 100 chars from the details
-    if not self.description and len(self.details) > 100:
-      self.description = self.details[0:100]
+    if not self.description:
+      if len(self.details) > 100:
+        self.description = self.details[0:100]
+      else:
+        self.description = self.details
 
     self.modified_date = timezone.now()
 
