@@ -1,10 +1,3 @@
-# test project resource edit
-# test project resource delete
-# test is part of organization to create, edit
-# test must be owner to delete project
-
-# test unapply
-
 from django.test import TestCase
 from django.test.utils import override_settings
 
