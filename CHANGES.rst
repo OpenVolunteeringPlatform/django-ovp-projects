@@ -71,3 +71,11 @@ v1.0.4
 v1.0.5
 -----------
 * Add organization to ProjectSearchSerializer
+
+v1.0.6
+-----------
+* Add applies to ProjectRetrieveSerializer
+* Add applied_count to ProjectRetrieveSerializer
+
+v1.0.7[unreleased]
+-----------
