@@ -77,6 +77,9 @@ v1.0.6
 * Add applies to ProjectRetrieveSerializer
 * Add applied_count to ProjectRetrieveSerializer
 
-v1.0.7[unreleased]
+v1.0.7
 -----------
 * Add max_applies_from_roles to Project
+
+v1.0.8[unreleased]
+-----------
