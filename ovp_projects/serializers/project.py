@@ -172,7 +172,7 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'applies']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'applies', 'applied_count']
 
   @add_disponibility_representation
   def to_representation(self, instance):

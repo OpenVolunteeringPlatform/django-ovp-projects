@@ -79,6 +79,7 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data["description"] == data["description"])
     self.assertTrue(type(response.data["owner"]) in [dict, OrderedDict])
     self.assertTrue(type(response.data["applies"]) is list)
+    self.assertTrue(type(response.data["applied_count"]) is int)
 
 
 @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": False})
