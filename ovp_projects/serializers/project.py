@@ -14,6 +14,8 @@ from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 from ovp_organizations.models import Organization
 
+from ovp_users.serializers import UserPublicRetrieveSerializer
+
 from rest_framework import serializers
 from rest_framework import exceptions
 from rest_framework.compat import set_many
@@ -137,6 +139,27 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     return super(ProjectCreateUpdateSerializer, self).to_representation(instance)
 
 
+class ApplyCreateSerializer(serializers.ModelSerializer):
+  email = serializers.EmailField(required=False)
+
+  class Meta:
+    model = models.Apply
+    fields = ['email', 'project']
+
+
+class ApplyRetrieveSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = models.Apply
+    fields = ['email', 'date', 'canceled', 'canceled_date', 'status']
+
+
+class ProjectAppliesSerializer(serializers.ModelSerializer):
+  user = UserPublicRetrieveSerializer()
+
+  class Meta:
+    model = models.Apply
+    fields = ['date', 'user']
+
 
 class ProjectRetrieveSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
@@ -144,10 +167,12 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   organization = OrganizationSearchSerializer()
   disponibility = DisponibilitySerializer()
   roles = VolunteerRoleSerializer(many=True)
+  owner = UserPublicRetrieveSerializer()
+  applies = ProjectAppliesSerializer(many=True, source="active_apply_set")
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'applies']
 
   @add_disponibility_representation
   def to_representation(self, instance):
@@ -166,22 +191,8 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
   address = GoogleAddressSerializer()
   organization = CompactOrganizationSerializer()
+  owner = UserPublicRetrieveSerializer()
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization']
-
-
-
-class ApplyCreateSerializer(serializers.ModelSerializer):
-  email = serializers.EmailField(required=False)
-
-  class Meta:
-    model = models.Apply
-    fields = ['email', 'project']
-
-
-class ApplyRetrieveSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = models.Apply
-    fields = ['email', 'date', 'canceled', 'canceled_date', 'status']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization', 'owner']

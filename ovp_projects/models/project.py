@@ -107,6 +107,9 @@ class Project(models.Model):
       return slug + append
     return None
 
+  def active_apply_set(self):
+    return self.apply_set.filter(canceled=False)
+
   def __str__(self):
       return  '%s' % (self.name)
 

@@ -8,6 +8,8 @@ from ovp_projects.models import Project, Apply
 from ovp_users.models import User
 from ovp_organizations.models import Organization
 
+from collections import OrderedDict
+
 import json
 import copy
 
@@ -75,6 +77,8 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data["slug"] == "test-project")
     self.assertTrue(response.data["details"] == data["details"])
     self.assertTrue(response.data["description"] == data["description"])
+    self.assertTrue(type(response.data["owner"]) in [dict, OrderedDict])
+    self.assertTrue(type(response.data["applies"]) is list)
 
 
 @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": False})
