@@ -79,3 +79,4 @@ v1.0.6
 
 v1.0.7[unreleased]
 -----------
+* Add max_applies_from_roles to Project

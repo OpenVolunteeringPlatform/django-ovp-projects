@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 
 from ovp_projects.models.apply import Apply
 from ovp_projects import emails
@@ -27,6 +29,7 @@ class Project(models.Model):
   published = models.BooleanField(_("Published"), default=False)
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
   applied_count = models.IntegerField(blank=False, null=False, default=0)
+  max_applies_from_roles = models.IntegerField(blank=False, null=False, default=0) # This is not a hard limit, just an estimate based on roles vacancies
 
   # Date fields
   published_date = models.DateTimeField(_("Published date"), blank=True, null=True)
@@ -117,6 +120,17 @@ class Project(models.Model):
     app_label = 'ovp_projects'
     verbose_name = _('project')
     verbose_name_plural = _('projects')
+
+@receiver(m2m_changed, sender=Project.roles.through)
+def update_max_applies_from_roles(sender, **kwargs):
+  project = kwargs['instance']
+  count = 0
+  for role in kwargs['instance'].roles.all():
+    if type(role.vacancies) is int:
+      count += role.vacancies
+  project.max_applies_from_roles = count
+  project.save()
+
 
 
 class VolunteerRole(models.Model):
