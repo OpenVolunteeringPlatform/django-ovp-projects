@@ -84,3 +84,4 @@ v1.0.7
 v1.0.8[unreleased]
 -----------
 * Allow members of organization to create/edit projects
+* Implement manageable projects route

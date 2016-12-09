@@ -131,6 +131,43 @@ class ProjectWithOrganizationTestCase(TestCase):
     self.assertTrue(response.status_code == 201)
 
 
+class ManageableProjectsRouteTestCase(TestCase):
+  def setUp(self):
+    self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
+    self.user.save()
+    self.user2 = User.objects.create_user(email="test_can_create_project2@gmail.com", password="testcancreate")
+    self.user2.save()
+    self.organization = Organization(name="test", type=0, owner=self.user)
+    self.organization.save()
+    self.organization2 = Organization(name="test2", type=0, owner=self.user2)
+    self.organization2.save()
+    self.organization2.members.add(self.user)
+
+    p = Project(name="test project 1", owner=self.user)
+    p.save()
+
+    p = Project(name="test project 2", owner=self.user, organization=self.organization)
+    p.save()
+
+    p = Project(name="test project 3", owner=self.user2, organization=self.organization2)
+    p.save()
+
+    self.client = APIClient()
+    self.client.force_authenticate(user=self.user)
+
+  def test_requires_authentication(self):
+    """Test hitting route unauthenticated returns 401"""
+    client = APIClient()
+    response = client.get(reverse("project-manageable"), {}, format="json")
+    self.assertTrue(response.status_code == 401)
+
+
+  def test_returns_projects(self):
+    """Test hitting route authenticated returns projects"""
+    response = self.client.get(reverse("project-manageable"), {}, format="json")
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(len(response.data) == 3)
+
 
 class ProjectResourceUpdateTestCase(TestCase):
   def setUp(self):
