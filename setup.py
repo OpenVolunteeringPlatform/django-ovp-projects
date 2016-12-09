@@ -26,6 +26,6 @@ setup(
       'ovp-users>=1.0.0,<1.1.0',
       'ovp-core>=1.0.0,<1.1.0',
       'ovp-uploads>=1.0.0,<1.1.0',
-      'ovp-organizations>=0.1.2,<1.0.0',
+      'ovp-organizations>=0.1.8,<1.0.0',
     ]
 )
