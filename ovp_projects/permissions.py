@@ -13,9 +13,10 @@ class ProjectCreateOwnsOrIsOrganizationMember(permissions.BasePermission):
       return True # Should fail on validator
 
     try:
-      organization = Organization.objects.get(pk=organization_pk, owner=request.user)
-      return True
-    except Organization.DoesNotExist:
+      organization = Organization.objects.get(pk=organization_pk)
+      if organization.owner == request.user or request.user in organization.members.all():
+        return True
+    except Organization.DoesNotExist: #pragma: no cover
       pass
     return False
 
@@ -25,4 +26,7 @@ class OwnsOrIsOrganizationMember(permissions.BasePermission):
     if request.user.is_authenticated:
       if obj.owner == request.user:
         return True
+      if obj.organization:
+        if request.user in obj.organization.members.all():
+          return True
     return False

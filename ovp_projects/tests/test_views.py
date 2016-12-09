@@ -36,6 +36,7 @@ class ProjectResourceViewSetTestCase(TestCase):
 
     response = client.post(reverse("project-list"), data, format="json")
 
+    self.assertTrue(response.status_code == 201)
     self.assertTrue(response.data["id"])
     self.assertTrue(response.data["name"] == data["name"])
     self.assertTrue(response.data["slug"] == "test-project")
@@ -119,10 +120,16 @@ class ProjectWithOrganizationTestCase(TestCase):
     """Test user can create project with valid organization"""
     org = Organization(name="test", type=0, owner=self.user)
     org.save()
+    org.members.add(self.another_user)
 
     self.data['organization'] = org.pk
     response = self.client.post(reverse("project-list"), self.data, format="json")
     self.assertTrue(response.status_code == 201)
+
+    self.client.force_authenticate(self.another_user)
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 201)
+
 
 
 class ProjectResourceUpdateTestCase(TestCase):
@@ -152,6 +159,17 @@ class ProjectResourceUpdateTestCase(TestCase):
     self.assertTrue(response.data["name"] == "test update")
     self.assertTrue(response.data["details"] == "update")
     self.assertTrue(response.data["description"] == "update")
+
+    user = User.objects.create_user(email="another@user.com", password="testcancreate")
+    organization = Organization(name="test", type=0, owner=self.user)
+    organization.save()
+    organization.members.add(user)
+    project = Project.objects.get(pk=response.data['id'])
+    project.organization = organization
+    project.save()
+    self.client.force_authenticate(user)
+    response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
+    self.assertTrue(response.status_code == 200)
 
   def test_update_address(self):
     """Test patch request update address resource"""
