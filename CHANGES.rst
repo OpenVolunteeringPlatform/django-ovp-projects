@@ -81,7 +81,10 @@ v1.0.7
 -----------
 * Add max_applies_from_roles to Project
 
-v1.0.8[unreleased]
+v1.0.8
 -----------
 * Allow members of organization to create/edit projects
 * Implement manageable projects route
+
+v1.0.9[unreleased]
+-----------
