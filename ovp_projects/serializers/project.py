@@ -144,7 +144,7 @@ class ApplyCreateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Apply
-    fields = ['email', 'project']
+    fields = ['email', 'project', 'user']
 
 
 class ApplyRetrieveSerializer(serializers.ModelSerializer):

@@ -390,6 +390,9 @@ class ApplyTestCase(TestCase):
     response = client.post(reverse("project-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["non_field_errors"][0] == "The fields email, project must make a unique set.")
 
+    response = client.get(reverse("project-detail", ["test-project"]), format="json")
+    self.assertTrue(type(response.data["applies"][0]["user"]) in [dict, OrderedDict])
+
 
   def test_can_reapply_to_project(self):
     """Assert that user can reapply to a project"""

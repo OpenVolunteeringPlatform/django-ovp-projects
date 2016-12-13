@@ -90,5 +90,9 @@ v1.0.9
 -----------
 * Upgrade ovp-organizations to 1.0.0
 
-v1.0.10[unreleased]
+v1.0.10
+-----------
+* Add user to ApplyCreateSerializer
+
+v1.0.11[unreleased]
 -----------

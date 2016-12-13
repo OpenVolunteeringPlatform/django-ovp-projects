@@ -58,7 +58,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   @decorators.detail_route(['POST'])
   def apply(self, request, *args, **kwargs):
     data = request.data
-    user = None
+    data.pop('user', None)
 
     project = self.get_object()
     data['project'] = project.id
