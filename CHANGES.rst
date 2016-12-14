@@ -97,6 +97,8 @@ v1.0.11
 v1.0.12
 -----------
 * Upgrade ovp-organization to 1.0.3
+* Add "user" to /projects/{slug}/applies/
 
 v1.0.13[unreleased]
 -----------
+

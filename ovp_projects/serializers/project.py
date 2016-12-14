@@ -14,7 +14,7 @@ from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 from ovp_organizations.models import Organization
 
-from ovp_users.serializers import UserPublicRetrieveSerializer
+from ovp_users.serializers import UserPublicRetrieveSerializer, UserApplyRetrieveSerializer
 
 from rest_framework import serializers
 from rest_framework import exceptions
@@ -148,9 +148,11 @@ class ApplyCreateSerializer(serializers.ModelSerializer):
 
 
 class ApplyRetrieveSerializer(serializers.ModelSerializer):
+  user = UserApplyRetrieveSerializer()
+
   class Meta:
     model = models.Apply
-    fields = ['email', 'date', 'canceled', 'canceled_date', 'status']
+    fields = ['email', 'date', 'canceled', 'canceled_date', 'status', 'user']
 
 
 class ProjectAppliesSerializer(serializers.ModelSerializer):

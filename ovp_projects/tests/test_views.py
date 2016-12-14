@@ -374,8 +374,8 @@ class VolunteerRoleTestCase(TestCase):
 class ApplyTestCase(TestCase):
   def test_can_apply_to_project(self):
     """Assert that authenticated user can apply to project"""
-    user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
-    project = Project(name="test project", details="abc", description="abc", owner=user)
+    owner = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
+    project = Project(name="test project", details="abc", description="abc", owner=owner)
     project.save()
 
     user = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
@@ -513,7 +513,15 @@ class ApplyTestCase(TestCase):
     client.force_authenticate(user=owner)
     response = client.get(reverse("project-applies", ["test-project"]), format="json")
     self.assertTrue(response.status_code == 200)
-    self.assertTrue(len(response.data) == 1)
+    self.assertTrue("email" in response.data[0])
+    self.assertTrue("date" in response.data[0])
+    self.assertTrue("canceled" in response.data[0])
+    self.assertTrue("canceled_date" in response.data[0])
+    self.assertTrue("status" in response.data[0])
+    self.assertTrue("name" in response.data[0]["user"])
+    self.assertTrue("avatar" in response.data[0]["user"])
+    self.assertTrue("email" in response.data[0]["user"])
+    self.assertTrue("phone" in response.data[0]["user"])
 
 
     client = APIClient()
