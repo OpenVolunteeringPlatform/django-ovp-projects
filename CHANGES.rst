@@ -77,22 +77,26 @@ v1.0.6
 * Add applies to ProjectRetrieveSerializer
 * Add applied_count to ProjectRetrieveSerializer
 
-v1.0.7
+v1.0.8
 -----------
 * Add max_applies_from_roles to Project
 
-v1.0.8
+v1.0.9
 -----------
 * Allow members of organization to create/edit projects
 * Implement manageable projects route
 
-v1.0.9
+v1.0.10
 -----------
 * Upgrade ovp-organizations to 1.0.0
 
-v1.0.10
+v1.0.11
 -----------
 * Add user to ApplyCreateSerializer
 
-v1.0.11[unreleased]
+v1.0.12
+-----------
+* Upgrade ovp-organization to 1.0.3
+
+v1.0.13[unreleased]
 -----------
