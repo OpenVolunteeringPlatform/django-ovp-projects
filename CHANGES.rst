@@ -94,10 +94,11 @@ v1.0.11
 -----------
 * Add user to ApplyCreateSerializer
 
-v1.0.12
+v1.0.12[unreleased]
 -----------
 * Upgrade ovp-organization to 1.0.3
 * Add "user" to /projects/{slug}/applies/
+* Add /projects/{slug}/close/ route
 
 v1.0.13[unreleased]
 -----------

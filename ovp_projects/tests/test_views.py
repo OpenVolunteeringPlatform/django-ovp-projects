@@ -84,6 +84,32 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(type(response.data["max_applies_from_roles"]) is int)
 
 
+
+class ProjectCloseTestCase(TestCase):
+  def setUp(self):
+    user = User.objects.create_user(email="test_close@gmail.com", password="testclose")
+    self.client = APIClient()
+    self.client.force_authenticate(user=user)
+
+    data = copy.copy(base_project)
+    self.project = self.client.post(reverse("project-list"), data, format="json")
+
+  def test_cant_close_project_if_not_owner_or_organization_member(self):
+    """ Assert that it's not possible to close a project if not the owner or organization member """
+    user = User.objects.create_user(email="otheruser@gmail.com", password="otheruser")
+    self.client.force_authenticate(user=user)
+    response = self.client.post(reverse("project-close", ["test-project"]), format="json")
+    self.assertTrue(response.status_code == 403)
+
+
+  def test_can_close_project(self):
+    """ Assert that it's possible to close a project """
+    response = self.client.post(reverse("project-close", ["test-project"]), format="json")
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["closed"] == True)
+    self.assertTrue(response.data["closed"])
+
+
 @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": False})
 class ProjectWithOrganizationTestCase(TestCase):
   def setUp(self):

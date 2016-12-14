@@ -48,6 +48,14 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     return response.Response(serializer.data)
 
+  @decorators.detail_route(['POST'])
+  def close(self, request, *args, **kwargs):
+    project = self.get_object()
+    project.closed = True
+    project.save()
+    serializer = self.get_serializer_class()(project)
+    return response.Response(serializer.data)
+
   @decorators.list_route(['GET'])
   def manageable(self, request, *args, **kwargs):
     projects = models.Project.objects.filter(Q(owner=request.user) | Q(organization__owner=request.user) | Q(organization__members=request.user))
@@ -129,6 +137,9 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     if self.action == 'manageable':
       self.permission_classes = (permissions.IsAuthenticated, )
 
+    if self.action == 'close':
+      self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
+
     return super(ProjectResourceViewSet, self).get_permissions()
 
   def get_serializer_class(self):
@@ -139,6 +150,8 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     if self.action == 'applies':
       return serializers.ApplyRetrieveSerializer
     if self.action == 'manageable':
+      return serializers.ProjectRetrieveSerializer
+    if self.action == 'close':
       return serializers.ProjectRetrieveSerializer
 
     return serializers.ProjectRetrieveSerializer
