@@ -105,7 +105,9 @@ v1.0.13
 * Fix errors with missing context on serializers
 * Upgrade ovp-users to 1.0.16
 
-v1.0.14[unreleased]
+v1.0.14
 -----------
 * Switch UserPublicRetrieveSerializer to UserProjectRetrieveSerializer in ProjectRetrieveSerializer
 
+v1.0.15[unreleased]
+-----------
