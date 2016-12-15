@@ -14,7 +14,7 @@ from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 from ovp_organizations.models import Organization
 
-from ovp_users.serializers import UserPublicRetrieveSerializer, UserApplyRetrieveSerializer
+from ovp_users.serializers import UserPublicRetrieveSerializer, UserApplyRetrieveSerializer, UserProjectRetrieveSerializer
 
 from rest_framework import serializers
 from rest_framework import exceptions
@@ -169,7 +169,7 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   organization = OrganizationSearchSerializer()
   disponibility = DisponibilitySerializer()
   roles = VolunteerRoleSerializer(many=True)
-  owner = UserPublicRetrieveSerializer()
+  owner = UserProjectRetrieveSerializer()
   applies = ProjectAppliesSerializer(many=True, source="active_apply_set")
 
   class Meta:

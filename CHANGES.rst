@@ -107,3 +107,5 @@ v1.0.13
 
 v1.0.14[unreleased]
 -----------
+* Switch UserPublicRetrieveSerializer to UserProjectRetrieveSerializer in ProjectRetrieveSerializer
+
