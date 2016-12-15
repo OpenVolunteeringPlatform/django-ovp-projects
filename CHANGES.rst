@@ -109,7 +109,7 @@ v1.0.14
 -----------
 * Switch UserPublicRetrieveSerializer to UserProjectRetrieveSerializer in ProjectRetrieveSerializer
 
-v1.0.15[unreleased]
+v1.0.15
 -----------
 * Fix user on project creation
 
