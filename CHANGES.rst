@@ -113,7 +113,7 @@ v1.0.15
 -----------
 * Fix user on project creation
 
-v1.0.16[unreleased]
+v1.0.16
 -----------
 * Fix user on project creation(not really fixed before)
 
