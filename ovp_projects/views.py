@@ -27,7 +27,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     user = users_models.User.objects.all().first()
     request.data['owner'] = user.pk
 
-    serializer = self.get_serializer(data=request.data)
+    serializer = self.get_serializer(data=request.data, context=self.get_serializer_context())
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
@@ -38,7 +38,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def partial_update(self, request, *args, **kwargs):
     """ We do not include the mixin as we want only PATCH and no PUT """
     instance = self.get_object()
-    serializer = self.get_serializer(instance, data=request.data, partial=True)
+    serializer = self.get_serializer(instance, data=request.data, partial=True, context=self.get_serializer_context())
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
@@ -53,14 +53,14 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     project = self.get_object()
     project.closed = True
     project.save()
-    serializer = self.get_serializer_class()(project)
+    serializer = self.get_serializer_class()(project, context=self.get_serializer_context())
     return response.Response(serializer.data)
 
   @decorators.list_route(['GET'])
   def manageable(self, request, *args, **kwargs):
     projects = models.Project.objects.filter(Q(owner=request.user) | Q(organization__owner=request.user) | Q(organization__members=request.user))
 
-    serializer = self.get_serializer_class()(projects, many=True)
+    serializer = self.get_serializer_class()(projects, many=True, context=self.get_serializer_context())
     return response.Response(serializer.data)
 
   @decorators.detail_route(['POST'])
