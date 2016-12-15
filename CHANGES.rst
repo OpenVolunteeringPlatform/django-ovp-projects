@@ -100,6 +100,7 @@ v1.0.12[unreleased]
 * Add "user" to /projects/{slug}/applies/
 * Add /projects/{slug}/close/ route
 * Fix errors with missing context on serializers
+* Upgrade ovp-users to 1.0.16
 
 v1.0.13[unreleased]
 -----------
