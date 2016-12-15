@@ -111,3 +111,7 @@ v1.0.14
 
 v1.0.15[unreleased]
 -----------
+* Fix user on project creation
+
+v1.0.16[unreleased]
+-----------
