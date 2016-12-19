@@ -117,7 +117,7 @@ v1.0.16
 -----------
 * Fix user on project creation(not really fixed before)
 
-v1.0.17[unreleased]
+v1.0.17
 -----------
 * Add CSV renderer
 
