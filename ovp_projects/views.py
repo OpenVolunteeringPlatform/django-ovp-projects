@@ -15,6 +15,7 @@ from rest_framework import permissions
 from rest_framework import response
 from rest_framework import status
 
+
 class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """
   ProjectResourceViewSet resource endpoint
@@ -115,7 +116,10 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_permissions(self):
     request = self.get_serializer_context()['request']
     if self.action == 'create':
-      self.permission_classes = (permissions.IsAuthenticated, ProjectCreateOwnsOrIsOrganizationMember, )
+      if helpers.get_settings().get('CAN_CREATE_PROJECTS_IN_ANY_ORGANIZATION', False):
+        self.permission_classes = (permissions.IsAuthenticated, )
+      else:
+        self.permission_classes = (permissions.IsAuthenticated, ProjectCreateOwnsOrIsOrganizationMember)
 
     if self.action in ['applies', 'partial_update']:
       self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
@@ -124,8 +128,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       self.permission_classes = (permissions.IsAuthenticated, )
 
     if self.action == 'apply':
-      settings = helpers.get_settings()
-      if settings.get('UNAUTHENTICATED_APPLY', False):
+      if helpers.get_settings().get('UNAUTHENTICATED_APPLY', False):
         self.permission_classes = ()
       else:
         self.permission_classes = (permissions.IsAuthenticated, )

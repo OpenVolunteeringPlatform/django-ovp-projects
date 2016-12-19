@@ -142,6 +142,16 @@ class ProjectWithOrganizationTestCase(TestCase):
     response = self.client.post(reverse("project-list"), self.data, format="json")
     self.assertTrue(response.status_code == 403)
 
+  @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_IN_ANY_ORGANIZATION": True})
+  def test_can_create_in_any_organization_if_settings_allow(self):
+    """Test user can create project inside any organization if properly configured"""
+    wrong_org = Organization(name="test", type=0, owner=self.another_user)
+    wrong_org.save()
+
+    self.data['organization'] = wrong_org.pk
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+    self.assertTrue(response.status_code == 201)
+
   def test_can_create(self):
     """Test user can create project with valid organization"""
     org = Organization(name="test", type=0, owner=self.user)
