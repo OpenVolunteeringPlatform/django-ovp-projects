@@ -119,3 +119,7 @@ v1.0.16
 
 v1.0.17[unreleased]
 -----------
+* Add CSV renderer
+
+v1.0.18[unreleased]
+-----------

@@ -549,6 +549,9 @@ class ApplyTestCase(TestCase):
     self.assertTrue("email" in response.data[0]["user"])
     self.assertTrue("phone" in response.data[0]["user"])
 
+    url = reverse("project-applies", ["test-project", "csv"])
+    response = client.get(url, format="csv")
+    self.assertTrue(response.status_code == 200)
 
     client = APIClient()
     client.force_authenticate(user=user)
