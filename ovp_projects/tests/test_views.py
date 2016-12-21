@@ -78,6 +78,7 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data["slug"] == "test-project")
     self.assertTrue(response.data["details"] == data["details"])
     self.assertTrue(response.data["description"] == data["description"])
+    self.assertTrue(response.data["published"] == False)
     self.assertTrue(type(response.data["owner"]) in [dict, OrderedDict])
     self.assertTrue(type(response.data["applies"]) is list)
     self.assertTrue(type(response.data["applied_count"]) is int)

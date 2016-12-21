@@ -127,3 +127,7 @@ v1.1.0
 
 v1.1.1[unreleased]
 -----------
+* Add 'published' field to ProjectRetrieveSerializer
+
+v1.1.2[unreleased]
+-----------
