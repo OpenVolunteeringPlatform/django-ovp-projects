@@ -129,6 +129,9 @@ v1.1.1
 -----------
 * Add 'published' field to ProjectRetrieveSerializer
 
-v1.1.2[unreleased]
+v1.1.2
 -----------
 * Fix missing context on ProjectResourceViewSet.applies
+
+v1.1.3[unreleased]
+-----------
