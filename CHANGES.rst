@@ -131,3 +131,4 @@ v1.1.1
 
 v1.1.2[unreleased]
 -----------
+* Fix missing context on ProjectResourceViewSet.applies

@@ -106,7 +106,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     project = self.get_object()
     applies = models.Apply.objects.filter(project=project)
 
-    serializer = self.get_serializer_class()(applies, many=True)
+    serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
 
     return response.Response(serializer.data)
 
