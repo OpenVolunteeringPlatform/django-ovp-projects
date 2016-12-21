@@ -125,7 +125,7 @@ v1.1.0
 -----------
 * Create OVP_PROJECTS.CAN_CREATE_PROJECTS_IN_ANY_ORGANIZATION setting
 
-v1.1.1[unreleased]
+v1.1.1
 -----------
 * Add 'published' field to ProjectRetrieveSerializer
 
