@@ -133,6 +133,9 @@ v1.1.2
 -----------
 * Fix missing context on ProjectResourceViewSet.applies
 
-v1.1.3[unreleased]
+v1.1.3
 -----------
 * Update overrides and assertions so the module can be tested inside any django project
+
+v1.1.4[unreleased]
+-----------
