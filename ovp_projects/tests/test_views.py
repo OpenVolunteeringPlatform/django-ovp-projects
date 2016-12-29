@@ -16,6 +16,7 @@ import copy
 
 base_project = {"name": "test project", "slug": "test-cant-override-slug-on-creation", "details": "this is just a test project", "description": "the project is being tested", "address": {"typed_address": "r. tecainda, 81, sao paulo"}, "disponibility": {"type": "work", "work": {"description": "abc"}}}
 
+@override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class ProjectResourceViewSetTestCase(TestCase):
   def test_cant_create_project_unauthenticated(self):
     """Assert that it's not possible to create a project while unauthenticated"""
@@ -86,6 +87,7 @@ class ProjectResourceViewSetTestCase(TestCase):
 
 
 
+@override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class ProjectCloseTestCase(TestCase):
   def setUp(self):
     user = User.objects.create_user(email="test_close@gmail.com", password="testclose")
@@ -206,6 +208,7 @@ class ManageableProjectsRouteTestCase(TestCase):
     self.assertTrue(len(response.data) == 3)
 
 
+@override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class ProjectResourceUpdateTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
@@ -279,6 +282,7 @@ class ProjectResourceUpdateTestCase(TestCase):
     self.assertTrue(response.data["roles"] == updated_project["roles"])
 
 
+@override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class DisponibilityTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
@@ -379,6 +383,7 @@ class DisponibilityTestCase(TestCase):
 
 
 
+@override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class VolunteerRoleTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")

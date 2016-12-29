@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core import mail
 from django.test.utils import override_settings
 
+from ovp_core.helpers import get_email_subject, is_email_enabled
 from ovp_users.models import User
 from ovp_projects.models import Project, Apply
 
@@ -14,8 +15,11 @@ class TestEmailTriggers(TestCase):
     mail.outbox = [] # Mails sent before creating don't matter
     project.save()
 
-    self.assertTrue(len(mail.outbox) == 1)
-    self.assertTrue(mail.outbox[0].subject == "Project created")
+    if is_email_enabled("projectCreated"):
+      self.assertTrue(len(mail.outbox) == 1)
+      self.assertTrue(mail.outbox[0].subject == get_email_subject("projectCreated", "Project created"))
+    else: # pragma: no cover
+      self.assertTrue(len(mail.outbox) == 0)
 
   def test_project_publishing_trigger_email(self):
     """Assert that email is triggered when publishing a project"""
@@ -27,8 +31,12 @@ class TestEmailTriggers(TestCase):
     project.published = True
     project.save()
 
-    self.assertTrue(len(mail.outbox) == 1)
-    self.assertTrue(mail.outbox[0].subject == "Project published")
+
+    if is_email_enabled("projectPublished"): # pragma: no cover
+      self.assertTrue(len(mail.outbox) == 1)
+      self.assertTrue(mail.outbox[0].subject == get_email_subject("projectPublished", "Project published"))
+    else: # pragma: no cover
+      self.assertTrue(len(mail.outbox) == 0)
 
 
   def test_project_closing_trigger_email(self):
@@ -41,8 +49,12 @@ class TestEmailTriggers(TestCase):
     project.closed = True
     project.save()
 
-    self.assertTrue(len(mail.outbox) == 1)
-    self.assertTrue(mail.outbox[0].subject == "Project closed")
+
+    if is_email_enabled("projectClosed"): # pragma: no cover
+      self.assertTrue(len(mail.outbox) == 1)
+      self.assertTrue(mail.outbox[0].subject == get_email_subject("projectClosed", "Project closed"))
+    else: # pragma: no cover
+      self.assertTrue(len(mail.outbox) == 0)
 
 
   def test_apply_trigger_email(self):
@@ -57,12 +69,15 @@ class TestEmailTriggers(TestCase):
     apply.save()
 
     recipients = [x.to[0] for x in mail.outbox]
+    subjects = [x.subject for x in mail.outbox]
 
-    self.assertTrue(len(mail.outbox) == 2)
-    self.assertTrue(mail.outbox[0].subject == "Applied to project")
-    self.assertTrue(mail.outbox[1].subject == "New volunteer")
-    self.assertTrue("test_project@project.com" in recipients)
-    self.assertTrue("test_volunteer@project.com" in recipients)
+    if is_email_enabled("volunteerApplied-ToVolunteer"): # pragma: no cover
+      self.assertTrue(get_email_subject("volunteerApplied-ToVolunteer", "Applied to project") in subjects)
+      self.assertTrue("test_project@project.com" in recipients)
+
+    if is_email_enabled("volunteerApplied-ToOwner"): # pragma: no cover
+      self.assertTrue(get_email_subject("volunteerApplied-ToOwner", "New volunteer") in subjects)
+      self.assertTrue("test_volunteer@project.com" in recipients)
 
 
   def test_unapply_trigger_email(self):
@@ -77,9 +92,12 @@ class TestEmailTriggers(TestCase):
     apply.save()
 
     recipients = [x.to[0] for x in mail.outbox]
+    subjects = [x.subject for x in mail.outbox]
 
-    self.assertTrue(len(mail.outbox) == 2)
-    self.assertTrue(mail.outbox[0].subject == "Unapplied from project")
-    self.assertTrue(mail.outbox[1].subject == "Volunteer unapplied from project")
-    self.assertTrue("test_project@project.com" in recipients)
-    self.assertTrue("test_volunteer@project.com" in recipients)
+    if is_email_enabled("volunteerUnapplied-ToVolunteer"): # pragma: no cover
+      self.assertTrue(get_email_subject("volunteerUnapplied-ToVolunteer", "Unapplied from project") in subjects)
+      self.assertTrue("test_project@project.com" in recipients)
+
+    if is_email_enabled("volunteerUnapplied-ToOwner"): # pragma: no cover
+      self.assertTrue(get_email_subject("volunteerUnapplied-ToOwner", "Volunteer unapplied from project") in subjects)
+      self.assertTrue("test_volunteer@project.com" in recipients)

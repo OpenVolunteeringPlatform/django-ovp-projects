@@ -135,3 +135,4 @@ v1.1.2
 
 v1.1.3[unreleased]
 -----------
+* Update overrides and assertions so the module can be tested inside any django project
