@@ -137,6 +137,9 @@ v1.1.3
 -----------
 * Update overrides and assertions so the module can be tested inside any django project
 
-v1.1.4[unreleased]
+v1.1.4
 -----------
 * Remove many to many between job and jobdates and add fk on jobdate pointing to job
+
+v1.1.5[unreleased]
+-----------
