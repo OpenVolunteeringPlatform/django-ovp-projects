@@ -28,7 +28,7 @@ class Job(models.Model):
     name = self.project and self.project.name or _('Unbound Job')
     start_date = self.start_date and self.start_date.strftime("%d/%m/%Y") or ''
     end_date = self.end_date and self.end_date.strftime("%d/%m/%Y") or ''
-    return "{} : {} ~ {}".format(name, start_date, end_date)
+    return "{}: {} ~ {}".format(name, start_date, end_date)
 
   def update_dates(self):
     start = self.dates.all().order_by('start_date').first().start_date

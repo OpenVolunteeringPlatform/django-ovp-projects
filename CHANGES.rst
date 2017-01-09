@@ -139,3 +139,4 @@ v1.1.3
 
 v1.1.4[unreleased]
 -----------
+* Remove many to many between job and jobdates and add fk on jobdate pointing to job

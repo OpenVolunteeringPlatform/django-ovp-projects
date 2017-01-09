@@ -132,9 +132,16 @@ class WorkModelTestCase(TestCase):
 class JobModelTestCase(TestCase):
   def test_str_method_returns_job_info(self):
     """ Assert that Job.__str__() method returns .start_date and .end_date """
+    user = User.objects.create_user(email="test@email.com", password="test_email")
+    user.save()
+    project = Project(name="test project", slug="test slug", details="abc", description="abc", owner=user)
+    project.save()
+
     start = timezone.now()
     end = timezone.now()
-    job = Job(start_date=start, end_date=end)
+    job = Job(start_date=start, end_date=end, project=project)
     job.save()
 
-    self.assertTrue(job.__str__() == "{} - {}".format(start, end))
+    human_time = lambda x: x.strftime("%d/%m/%Y")
+
+    self.assertTrue(job.__str__() == "{}: {} ~ {}".format(project.name, human_time(start), human_time(end)))
