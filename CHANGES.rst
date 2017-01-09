@@ -139,7 +139,11 @@ v1.1.3
 
 v1.1.4
 -----------
+[skipped release]
+
+v1.1.5
+-----------
 * Remove many to many between job and jobdates and add fk on jobdate pointing to job
 
-v1.1.5[unreleased]
+v1.1.6[unreleased]
 -----------
