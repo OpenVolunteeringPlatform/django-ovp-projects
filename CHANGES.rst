@@ -145,5 +145,9 @@ v1.1.5
 -----------
 * Remove many to many between job and jobdates and add fk on jobdate pointing to job
 
-v1.1.6[unreleased]
+v1.1.6
+-----------
+* Implement admin panel
+
+v1.1.7[unreleased]
 -----------
