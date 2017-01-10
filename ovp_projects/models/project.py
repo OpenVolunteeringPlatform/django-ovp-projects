@@ -13,14 +13,14 @@ class Project(models.Model):
   """
   Project model
   """
-  image = models.ForeignKey('ovp_uploads.UploadedImage', blank=False, null=True)
-  address = models.OneToOneField('ovp_core.GoogleAddress', blank=True, null=True)
-  skills = models.ManyToManyField('ovp_core.Skill')
-  causes = models.ManyToManyField('ovp_core.Cause')
+  image = models.ForeignKey('ovp_uploads.UploadedImage', blank=False, null=True, verbose_name=_('image'))
+  address = models.OneToOneField('ovp_core.GoogleAddress', blank=True, null=True, verbose_name=_('address'))
+  skills = models.ManyToManyField('ovp_core.Skill', verbose_name=_('skills'))
+  causes = models.ManyToManyField('ovp_core.Cause', verbose_name=_('causes'))
 
   # Relationships
-  owner = models.ForeignKey('ovp_users.User')
-  organization = models.ForeignKey('ovp_organizations.Organization', blank=False, null=True)
+  owner = models.ForeignKey('ovp_users.User', verbose_name=_('image'))
+  organization = models.ForeignKey('ovp_organizations.Organization', blank=False, null=True, verbose_name=_('organization'))
   roles = models.ManyToManyField('VolunteerRole', verbose_name=_("Volunteer Roles"), blank=True)
 
   # Fields
@@ -28,7 +28,7 @@ class Project(models.Model):
   slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
   published = models.BooleanField(_("Published"), default=False)
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
-  applied_count = models.IntegerField(blank=False, null=False, default=0)
+  applied_count = models.IntegerField(_('Applied count'), blank=False, null=False, default=0)
   max_applies_from_roles = models.IntegerField(blank=False, null=False, default=0) # This is not a hard limit, just an estimate based on roles vacancies
 
   # Date fields
@@ -37,8 +37,8 @@ class Project(models.Model):
   closed_date = models.DateTimeField(_("Closed date"), blank=True, null=True)
   deleted = models.BooleanField(_("Deleted"), default=False)
   deleted_date = models.DateTimeField(_("Deleted date"), blank=True, null=True)
-  created_date = models.DateTimeField(auto_now_add=True)
-  modified_date = models.DateTimeField(auto_now=True)
+  created_date = models.DateTimeField(_('Created date'), auto_now_add=True)
+  modified_date = models.DateTimeField(_('Modified date'), auto_now=True)
 
   # About
   details = models.TextField(_('Details'), max_length=3000)
@@ -63,9 +63,9 @@ class Project(models.Model):
   Model operation methods
   '''
   def delete(self, *args, **kwargs):
-      self.deleted = True
-      self.published = False
-      self.save()
+    self.deleted = True
+    self.published = False
+    self.save()
 
   def save(self, *args, **kwargs):
     if self.pk is not None:

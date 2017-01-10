@@ -5,13 +5,13 @@ from django.utils import timezone
 from ovp_projects import emails
 
 class Apply(models.Model):
-  user = models.ForeignKey('ovp_users.User', blank=True, null=True)
-  project = models.ForeignKey('ovp_projects.Project')
-  status = models.CharField(_('name'), max_length=30)
-  date = models.DateTimeField(auto_now_add=True, blank=True) # created date
-  canceled = models.BooleanField(_("Canceled"), default=False)
-  canceled_date = models.DateTimeField(_("Canceled date"), blank=True, null=True)
-  email = models.CharField(_('Email'), max_length=200, blank=True, null=True)
+  user = models.ForeignKey('ovp_users.User', blank=True, null=True, verbose_name=_('user'))
+  project = models.ForeignKey('ovp_projects.Project', verbose_name=_('project'))
+  status = models.CharField(_('status'), max_length=30)
+  date = models.DateTimeField(_('created date'), auto_now_add=True, blank=True)
+  canceled = models.BooleanField(_("canceled"), default=False)
+  canceled_date = models.DateTimeField(_("canceled date"), blank=True, null=True)
+  email = models.CharField(_('email'), max_length=200, blank=True, null=True)
 
   def mailing(self, async_mail=None):
     return emails.ApplyMail(self, async_mail)

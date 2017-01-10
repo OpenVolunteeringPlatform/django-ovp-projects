@@ -48,6 +48,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
   raw_id_fields = []
 
+  filter_horizontal = ('skills', 'causes', 'roles',)
 
   def organization__name(self, obj):
     return obj.organization.name
