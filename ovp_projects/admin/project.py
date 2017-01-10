@@ -51,7 +51,10 @@ class ProjectAdmin(admin.ModelAdmin):
   filter_horizontal = ('skills', 'causes', 'roles',)
 
   def organization__name(self, obj):
-    return obj.organization.name
+    if obj.organization:
+      return obj.organization.name
+    else:
+      return _('None')
   organization__name.short_description = _('Organization')
   organization__name.admin_order_field = 'organization__name'
 
