@@ -21,7 +21,6 @@ class Project(models.Model):
   # Relationships
   owner = models.ForeignKey('ovp_users.User', verbose_name=_('image'))
   organization = models.ForeignKey('ovp_organizations.Organization', blank=False, null=True, verbose_name=_('organization'))
-  roles = models.ManyToManyField('VolunteerRole', verbose_name=_("Volunteer Roles"), blank=True)
 
   # Fields
   name = models.CharField(_('Project name'), max_length=100)
@@ -121,17 +120,6 @@ class Project(models.Model):
     verbose_name = _('project')
     verbose_name_plural = _('projects')
 
-@receiver(m2m_changed, sender=Project.roles.through)
-def update_max_applies_from_roles(sender, **kwargs):
-  project = kwargs['instance']
-  count = 0
-  for role in kwargs['instance'].roles.all():
-    if type(role.vacancies) is int:
-      count += role.vacancies
-  project.max_applies_from_roles = count
-  project.save()
-
-
 
 class VolunteerRole(models.Model):
   """
@@ -141,6 +129,8 @@ class VolunteerRole(models.Model):
   prerequisites = models.TextField(_('Prerequisites'), max_length=1024, blank=True, null=True, default=None)
   details = models.TextField(_('Details'), max_length=1024, blank=True, null=True, default=None)
   vacancies = models.PositiveSmallIntegerField(_('Vacancies'), blank=True, null=True, default=None)
+  project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True, related_name='roles', verbose_name=_('project'))
+
 
   class Meta:
     app_label = 'ovp_projects'
@@ -149,3 +139,16 @@ class VolunteerRole(models.Model):
 
   def __str__(self):
     return  '%s - %s - %s (%s vacancies)' % (self.name, self.details, self.prerequisites, self.vacancies)
+
+
+
+#todo: @receiver(m2m_changed, sender=Project.roles.through)
+def update_max_applies_from_roles(sender, **kwargs):
+  project = kwargs['instance']
+  count = 0
+  for role in kwargs['instance'].roles.all():
+    if type(role.vacancies) is int:
+      count += role.vacancies
+  project.max_applies_from_roles = count
+  project.save()
+

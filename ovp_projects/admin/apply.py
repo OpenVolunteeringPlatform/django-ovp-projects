@@ -9,7 +9,7 @@ class ApplyAdmin(admin.ModelAdmin):
   fields = [
     ('id', 'project__name', 'status'),
     'user', 'project', 'project__organization__name',
-    ('canceled', 'canceled_date'),
+    ('canceled', 'canceled_date', 'date'),
     'email'
     ]
 

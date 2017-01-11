@@ -8,13 +8,17 @@ from .jobdate import JobDateAdmin, JobDateInline
 
 
 class JobAdmin(admin.ModelAdmin):
-  exclude=['dates']
+  #exclude=['dates']
   list_display = ['id', 'project', 'start_date', 'end_date']
   search_fields = ['id', 'project__name', 'project__nonprofit__name']
 
   inlines = (
     JobDateInline,
   )
+
+
+class JobInline(admin.TabularInline):
+  model = Job
 
 
 admin.site.register(Job, JobAdmin)

@@ -28,6 +28,10 @@ class WorkAdmin(admin.ModelAdmin):
   raw_id_fields = []
 
 
+class WorkInline(admin.TabularInline):
+  model = Work
+
+
 admin.site.register(Work, WorkAdmin)
 
 
