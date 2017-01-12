@@ -43,7 +43,8 @@ class ProjectAdmin(admin.ModelAdmin):
   ]
 
   readonly_fields = [
-    'id', 'created_date', 'modified_date', 'published_date', 'closed_date', 'deleted_date'
+    'id', 'created_date', 'modified_date', 'published_date', 'closed_date', 'deleted_date',
+    'applied_count', 'max_applies_from_roles',
   ]
 
   raw_id_fields = []
