@@ -73,7 +73,9 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     if request.user.is_authenticated():
       user = request.user
+      data['username'] = user.name
       data['email'] = user.email
+      data['phone'] = user.phone
       data['user'] = user.id
 
     try:

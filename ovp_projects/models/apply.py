@@ -11,7 +11,10 @@ class Apply(models.Model):
   date = models.DateTimeField(_('created date'), auto_now_add=True, blank=True)
   canceled = models.BooleanField(_("canceled"), default=False)
   canceled_date = models.DateTimeField(_("canceled date"), blank=True, null=True)
+
+  username = models.CharField(_('username'), max_length=200, blank=True, null=True)
   email = models.CharField(_('email'), max_length=200, blank=True, null=True)
+  phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
 
   def mailing(self, async_mail=None):
     return emails.ApplyMail(self, async_mail)

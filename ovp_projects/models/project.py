@@ -19,7 +19,7 @@ class Project(models.Model):
   causes = models.ManyToManyField('ovp_core.Cause', verbose_name=_('causes'))
 
   # Relationships
-  owner = models.ForeignKey('ovp_users.User', verbose_name=_('image'))
+  owner = models.ForeignKey('ovp_users.User', verbose_name=_('owner'))
   organization = models.ForeignKey('ovp_organizations.Organization', blank=False, null=True, verbose_name=_('organization'))
 
   # Fields
@@ -29,6 +29,8 @@ class Project(models.Model):
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
   applied_count = models.IntegerField(_('Applied count'), blank=False, null=False, default=0)
   max_applies_from_roles = models.IntegerField(blank=False, null=False, default=0) # This is not a hard limit, just an estimate based on roles vacancies
+  max_applies = models.IntegerField(blank=False, null=False, default=1) #note: This is not a hard limit, or is it?
+  public_project = models.BooleanField(_("Public"), default=True, blank=False)
 
   # Date fields
   published_date = models.DateTimeField(_("Published date"), blank=True, null=True)
