@@ -28,8 +28,8 @@ class Project(models.Model):
   published = models.BooleanField(_("Published"), default=False)
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
   applied_count = models.IntegerField(_('Applied count'), blank=False, null=False, default=0)
-  max_applies_from_roles = models.IntegerField(blank=False, null=False, default=0) # This is not a hard limit, just an estimate based on roles vacancies
   max_applies = models.IntegerField(blank=False, null=False, default=1) #note: This is not a hard limit, or is it?
+  max_applies_from_roles = models.IntegerField(blank=False, null=False, default=0) # This is not a hard limit, just an estimate based on roles vacancies
   public_project = models.BooleanField(_("Public"), default=True, blank=False)
 
   # Date fields
@@ -146,11 +146,9 @@ class VolunteerRole(models.Model):
 
 #todo: @receiver(m2m_changed, sender=Project.roles.through)
 def update_max_applies_from_roles(sender, **kwargs):
-  project = kwargs['instance']
-  count = 0
-  for role in kwargs['instance'].roles.all():
-    if type(role.vacancies) is int:
-      count += role.vacancies
-  project.max_applies_from_roles = count
+  queryset = VolunteerRole.objects.filter(project=kwargs['instance'])
+  vacancies = queryset.aggregate(count=Sum('vacancies'))
+  project.max_applies_from_roles = vacancies.get('count')
+
   project.save()
 

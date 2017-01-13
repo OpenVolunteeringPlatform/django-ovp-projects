@@ -43,7 +43,12 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles']
+    fields = [
+      'id', 'image', 'name', 'slug', 'owner',
+      'details', 'description',
+      'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles',
+      'max_applies'
+      ]
     read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
@@ -174,7 +179,11 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'applies', 'applied_count', 'max_applies_from_roles', 'closed', 'closed_date', 'published']
+    fields = [
+      'slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility',
+      'roles', 'owner',
+      'applies', 'applied_count', 'max_applies', 'max_applies_from_roles',
+      'closed', 'closed_date', 'published']
 
   @add_disponibility_representation
   def to_representation(self, instance):
