@@ -6,10 +6,14 @@ from ovp_projects.models import Project, VolunteerRole
 from .job import JobInline
 from .work import WorkInline
 
+from ovp_core.mixins import CountryFilterMixin
+
+
 class VolunteerRoleInline(admin.TabularInline):
   model = VolunteerRole
 
-class ProjectAdmin(admin.ModelAdmin):
+
+class ProjectAdmin(admin.ModelAdmin, CountryFilterMixin):
   fields = [
     ('id', 'highlighted'), ('name', 'slug'),
     ('organization', 'owner'),
@@ -82,7 +86,6 @@ class ProjectAdmin(admin.ModelAdmin):
   organization__name.short_description = _('Organization')
   organization__name.admin_order_field = 'organization__name'
 
-
   def owner__name(self, obj):
     return obj.owner and obj.owner.name or _('Owner not assigned')
   owner__name.short_description = _('Owner name')
@@ -97,6 +100,10 @@ class ProjectAdmin(admin.ModelAdmin):
     return obj.owner and obj.owner.phone or _('Owner not assigned')
   owner__phone.short_description = _('Owner phone')
   owner__phone.admin_order_field = 'owner__phone'
+
+  def get_queryset(self, request):
+    qs = super(ProjectAdmin, self).get_queryset(request)
+    return self.filter_by_country(request, qs, 'address')
 
 
 admin.site.register(Project, ProjectAdmin)
