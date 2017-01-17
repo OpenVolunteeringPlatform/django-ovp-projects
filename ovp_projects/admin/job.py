@@ -8,15 +8,6 @@ from ovp_projects.models import Job, JobDate
 from .jobdate import JobDateAdmin, JobDateInline
 
 
-class JobAdmin(admin.ModelAdmin):
-	list_display = ['id', 'project', 'start_date', 'end_date']
-	search_fields = ['id', 'project__name', 'project__nonprofit__name']
-
-	inlines = (
-		JobDateInline,
-	)
-
-
 class JobInline(admin.TabularInline):
 	exclude = ['title']
 	model = Job
@@ -31,6 +22,15 @@ class JobInline(admin.TabularInline):
 		return '<a href="{}" target="_blank">{}</a>'.format(edit_dates_url, _('edit'))
 	edit_dates_link.short_escription = _('Edit dates')
 	edit_dates_link.allow_tags = True
+
+
+class JobAdmin(admin.ModelAdmin):
+	list_display = ['id', 'project', 'start_date', 'end_date']
+	search_fields = ['id', 'project__name', 'project__nonprofit__name']
+
+	inlines = (
+		JobDateInline,
+	)
 
 admin.site.register(Job, JobAdmin)
 
