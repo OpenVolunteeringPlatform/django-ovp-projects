@@ -13,7 +13,7 @@ class Project(models.Model):
   """
   Project model
   """
-  image = models.ForeignKey('ovp_uploads.UploadedImage', blank=False, null=True, verbose_name=_('image'))
+  image = models.ForeignKey('ovp_uploads.UploadedImage', blank=True, null=True, verbose_name=_('image'))
   address = models.OneToOneField('ovp_core.GoogleAddress', blank=True, null=True, verbose_name=_('address'))
   skills = models.ManyToManyField('ovp_core.Skill', verbose_name=_('skills'))
   causes = models.ManyToManyField('ovp_core.Cause', verbose_name=_('causes'))
