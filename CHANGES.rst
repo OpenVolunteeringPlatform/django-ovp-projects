@@ -148,6 +148,9 @@ v1.1.5
 v1.1.6
 -----------
 * Implement admin panel
+* Use GoogleAddressLatLngSerializer instead of GoogleAddressSerializer on ProjectSearchSerializer
+* Add 'max_applies' and 'public_project' to Project model
+* Project 'image' is now nullable
 
 v1.1.7[unreleased]
 -----------
