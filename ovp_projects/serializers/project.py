@@ -200,7 +200,7 @@ class CompactOrganizationSerializer(serializers.ModelSerializer):
 
 class ProjectSearchSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
-  address = GoogleAddressSerializer()
+  address = GoogleAddressLatLngSerializer()
   organization = CompactOrganizationSerializer()
   owner = UserPublicRetrieveSerializer()
 
