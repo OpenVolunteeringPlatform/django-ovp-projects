@@ -46,7 +46,7 @@ v1.0.0
 * Upgrade to drf 3.5.3
 * Create applies routes (create, remove and list)
 * Add applied_count field to project
-* Add project creation, publishing and closing, applying and unapplying 
+* Add project creation, publishing and closing, applying and unapplying
 * Automatic slug on project creation
 * Add close_finished_projects command
 * Release as stable (YAY \o/)
@@ -171,5 +171,9 @@ v1.1.10
 * Fix Project.max_applies_from_roles updating when creating/removing VolunteerRole
 * Add missing tests
 
-v1.1.11[unreleased]
+v1.1.11
+-----------
+* add 'links' prop to sendProjectCreated, sendProjectPublished contexts
+
+v1.1.12[unreleased]
 -----------
