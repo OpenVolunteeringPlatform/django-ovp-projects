@@ -47,7 +47,7 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
       'id', 'image', 'name', 'slug', 'owner',
       'details', 'description',
       'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles',
-      'max_applies'
+      'max_applies', 'minimum_age'
       ]
     read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
@@ -181,7 +181,7 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
     model = models.Project
     fields = [
       'slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility',
-      'roles', 'owner',
+      'roles', 'owner', 'minimum_age',
       'applies', 'applied_count', 'max_applies', 'max_applies_from_roles',
       'closed', 'closed_date', 'published']
 

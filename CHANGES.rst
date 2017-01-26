@@ -155,3 +155,4 @@ v1.1.6
 v1.1.7[unreleased]
 -----------
 * Add 'applied_count' to ProjectSearchSerializer
+* Add 'minimum_age' field to Project model

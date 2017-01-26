@@ -14,7 +14,7 @@ import json
 import copy
 
 
-base_project = {"name": "test project", "slug": "test-cant-override-slug-on-creation", "details": "this is just a test project", "description": "the project is being tested", "address": {"typed_address": "r. tecainda, 81, sao paulo"}, "disponibility": {"type": "work", "work": {"description": "abc"}}}
+base_project = {"name": "test project", "slug": "test-cant-override-slug-on-creation", "details": "this is just a test project", "description": "the project is being tested", "minimum_age": 18, "address": {"typed_address": "r. tecainda, 81, sao paulo"}, "disponibility": {"type": "work", "work": {"description": "abc"}}}
 
 @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class ProjectResourceViewSetTestCase(TestCase):
@@ -43,6 +43,7 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data["slug"] == "test-project")
     self.assertTrue(response.data["details"] == data["details"])
     self.assertTrue(response.data["description"] == data["description"])
+    self.assertTrue(response.data["minimum_age"] == data["minimum_age"])
 
     project = Project.objects.get(pk=response.data["id"])
     self.assertTrue(project.owner.id == user.id)
