@@ -206,4 +206,4 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization', 'owner']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization', 'owner', 'applied_count']
