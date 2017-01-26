@@ -152,7 +152,10 @@ v1.1.6
 * Add 'max_applies' and 'public_project' to Project model
 * Project 'image' is now nullable
 
-v1.1.7[unreleased]
+v1.1.7
 -----------
 * Add 'applied_count' to ProjectSearchSerializer
 * Add 'minimum_age' field to Project model
+
+v1.1.8[unreleased]
+-----------
