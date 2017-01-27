@@ -159,3 +159,4 @@ v1.1.7
 
 v1.1.8[unreleased]
 -----------
+* Patch test_views.ApplyTestCase.test_unauthenticated_user_cant_apply_to_project to override settings

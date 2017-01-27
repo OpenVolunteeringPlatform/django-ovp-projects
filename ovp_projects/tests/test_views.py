@@ -510,6 +510,7 @@ class ApplyTestCase(TestCase):
     self.assertTrue(response.status_code == 404)
 
 
+  @override_settings(OVP_PROJECTS={"UNAUTHENTICATED_APPLY": False})
   def test_unauthenticated_user_cant_apply_to_project(self):
     """Assert that unauthenticated user cant apply to project"""
     user = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
