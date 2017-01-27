@@ -163,3 +163,4 @@ v1.1.8
 
 v1.1.9[unreleased]
 -----------
+* Upgrade dependencies
