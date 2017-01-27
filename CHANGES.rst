@@ -157,6 +157,9 @@ v1.1.7
 * Add 'applied_count' to ProjectSearchSerializer
 * Add 'minimum_age' field to Project model
 
-v1.1.8[unreleased]
+v1.1.8
 -----------
 * Patch test_views.ApplyTestCase.test_unauthenticated_user_cant_apply_to_project to override settings
+
+v1.1.9[unreleased]
+-----------
