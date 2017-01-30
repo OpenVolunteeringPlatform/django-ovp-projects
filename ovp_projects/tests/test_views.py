@@ -118,7 +118,8 @@ class ProjectCloseTestCase(TestCase):
 class ProjectWithOrganizationTestCase(TestCase):
   def setUp(self):
     self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
-    self.another_user = User.objects.create_user(email="test_another_user@test.com", password="testcancreate")
+    self.second_user = User.objects.create_user(email="test_second_user@test.com", password="testcancreate")
+    self.third_user = User.objects.create_user(email="test_third_user@test.com", password="testcancreate")
     self.data = copy.copy(base_project)
     self.client = APIClient()
     self.client.force_authenticate(user=self.user)
@@ -139,7 +140,7 @@ class ProjectWithOrganizationTestCase(TestCase):
 
   def test_user_is_owner_or_member(self):
     """Test user is owner or member of organization"""
-    wrong_org = Organization(name="test", type=0, owner=self.another_user)
+    wrong_org = Organization(name="test", type=0, owner=self.second_user)
     wrong_org.save()
 
     self.data['organization'] = wrong_org.pk
@@ -149,7 +150,7 @@ class ProjectWithOrganizationTestCase(TestCase):
   @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_IN_ANY_ORGANIZATION": True})
   def test_can_create_in_any_organization_if_settings_allow(self):
     """Test user can create project inside any organization if properly configured"""
-    wrong_org = Organization(name="test", type=0, owner=self.another_user)
+    wrong_org = Organization(name="test", type=0, owner=self.second_user)
     wrong_org.save()
 
     self.data['organization'] = wrong_org.pk
@@ -160,15 +161,43 @@ class ProjectWithOrganizationTestCase(TestCase):
     """Test user can create project with valid organization"""
     org = Organization(name="test", type=0, owner=self.user)
     org.save()
-    org.members.add(self.another_user)
+    org.members.add(self.second_user)
 
     self.data['organization'] = org.pk
     response = self.client.post(reverse("project-list"), self.data, format="json")
     self.assertTrue(response.status_code == 201)
 
-    self.client.force_authenticate(self.another_user)
+    self.client.force_authenticate(self.second_user)
     response = self.client.post(reverse("project-list"), self.data, format="json")
     self.assertTrue(response.status_code == 201)
+
+  def test_can_hide_address(self):
+    """Test user can create project with valid organization"""
+    org = Organization(name="test", type=0, owner=self.user)
+    org.save()
+    org.members.add(self.second_user)
+
+    self.data['organization'] = org.pk
+    self.data['hidden_address'] = True
+    response = self.client.post(reverse("project-list"), self.data, format="json")
+
+    # Owner retrieving
+    response = self.client.get(reverse("project-detail", ["test-project"]), format="json")
+    self.assertTrue(response.data["address"]["typed_address"] == self.data["address"]["typed_address"])
+    self.assertTrue(response.data["hidden_address"] == True)
+
+    # Organization member retrieving
+    self.client.force_authenticate(self.second_user)
+    response = self.client.get(reverse("project-detail", ["test-project"]), format="json")
+    self.assertTrue(response.data["address"]["typed_address"] == self.data["address"]["typed_address"])
+    self.assertTrue(response.data["hidden_address"] == True)
+
+    # Non member retrieving
+    self.client.force_authenticate(self.third_user)
+    response = self.client.get(reverse("project-detail", ["test-project"]), format="json")
+    self.assertTrue(response.data["address"] == None)
+    self.assertTrue(response.data["hidden_address"] == True)
+    print(response.data)
 
 
 class ManageableProjectsRouteTestCase(TestCase):

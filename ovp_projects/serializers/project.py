@@ -1,5 +1,6 @@
 from ovp_projects import models
 from ovp_projects import helpers
+from ovp_projects.decorators import hide_address
 from ovp_projects.serializers.disponibility import DisponibilitySerializer, add_disponibility_representation
 from ovp_projects.serializers.job import JobSerializer
 from ovp_projects.serializers.work import WorkSerializer
@@ -43,12 +44,7 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = [
-      'id', 'image', 'name', 'slug', 'owner',
-      'details', 'description',
-      'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles',
-      'max_applies', 'minimum_age'
-      ]
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles', 'max_applies', 'minimum_age', 'hidden_address']
     read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
@@ -179,12 +175,9 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = [
-      'slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility',
-      'roles', 'owner', 'minimum_age',
-      'applies', 'applied_count', 'max_applies', 'max_applies_from_roles',
-      'closed', 'closed_date', 'published']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'minimum_age', 'applies', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address']
 
+  @hide_address
   @add_disponibility_representation
   def to_representation(self, instance):
     return super(ProjectRetrieveSerializer, self).to_representation(instance)
@@ -206,4 +199,8 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization', 'owner', 'applied_count']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization', 'owner', 'applied_count', 'hidden_address']
+
+  @hide_address
+  def to_representation(self, instance):
+    return super(ProjectSearchSerializer, self).to_representation(instance)
