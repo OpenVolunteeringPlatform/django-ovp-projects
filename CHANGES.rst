@@ -165,7 +165,11 @@ v1.1.9
 -----------
 * Upgrade dependencies
 
-v1.1.10[unreleased]
+v1.1.10
 -----------
 * Implement Project.hidden_address field.
 * Fix Project.max_applies_from_roles updating when creating/removing VolunteerRole
+* Add missing tests
+
+v1.1.11[unreleased]
+-----------
