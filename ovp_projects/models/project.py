@@ -32,6 +32,7 @@ class Project(models.Model):
   max_applies_from_roles = models.IntegerField(blank=False, null=False, default=0) # This is not a hard limit, just an estimate based on roles vacancies
   public_project = models.BooleanField(_("Public"), default=True, blank=False)
   minimum_age = models.IntegerField(_("Minimum Age"), blank=False, null=False, default=0)
+  hidden_address = models.BooleanField(_('Hidden address'), default=False)
 
   # Date fields
   published_date = models.DateTimeField(_("Published date"), blank=True, null=True)
