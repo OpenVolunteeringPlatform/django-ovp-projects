@@ -197,7 +197,6 @@ class ProjectWithOrganizationTestCase(TestCase):
     response = self.client.get(reverse("project-detail", ["test-project"]), format="json")
     self.assertTrue(response.data["address"] == None)
     self.assertTrue(response.data["hidden_address"] == True)
-    print(response.data)
 
 
 class ManageableProjectsRouteTestCase(TestCase):
