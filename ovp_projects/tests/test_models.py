@@ -119,6 +119,20 @@ class VolunteerRoleModelTestCase(TestCase):
 
     self.assertTrue(role.__str__() == "test role - a - b (5 vacancies)")
 
+  def test_modifying_roles_update_project_max_applies(self):
+    """ Assert that modifying a role updates Project.max_applies_from_roles """
+    user = User.objects.create_user(email="test_slug@test.com", password="test_slug_test")
+    project = Project(details="abc", owner=user)
+    project.save()
+    role = VolunteerRole(name="test role", details="a", prerequisites="b", vacancies=5, project=project)
+
+    self.assertTrue(Project.objects.last().max_applies_from_roles == 0)
+    role.save()
+    self.assertTrue(Project.objects.last().max_applies_from_roles == 5)
+    role.delete()
+    self.assertTrue(Project.objects.last().max_applies_from_roles == 0)
+
+
 
 class WorkModelTestCase(TestCase):
   def test_str_method_returns_work_info(self):

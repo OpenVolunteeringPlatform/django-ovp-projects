@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
-from django.db.models.signals import m2m_changed
+from django.db.models import Sum
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from ovp_projects.models.apply import Apply
@@ -133,7 +134,7 @@ class VolunteerRole(models.Model):
   prerequisites = models.TextField(_('Prerequisites'), max_length=1024, blank=True, null=True, default=None)
   details = models.TextField(_('Details'), max_length=1024, blank=True, null=True, default=None)
   vacancies = models.PositiveSmallIntegerField(_('Vacancies'), blank=True, null=True, default=None)
-  project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True, related_name='roles', verbose_name=_('project'))
+  project = models.ForeignKey(Project, blank=True, null=True, related_name='roles', verbose_name=_('Project'))
 
 
   class Meta:
@@ -146,11 +147,13 @@ class VolunteerRole(models.Model):
 
 
 
-#todo: @receiver(m2m_changed, sender=Project.roles.through)
+@receiver(post_save, sender=VolunteerRole)
+@receiver(post_delete, sender=VolunteerRole)
 def update_max_applies_from_roles(sender, **kwargs):
-  queryset = VolunteerRole.objects.filter(project=kwargs['instance'])
-  vacancies = queryset.aggregate(count=Sum('vacancies'))
-  project.max_applies_from_roles = vacancies.get('count')
+  project = kwargs['instance'].project
 
-  project.save()
-
+  if project:
+    queryset = VolunteerRole.objects.filter(project=project)
+    vacancies = queryset.aggregate(Sum('vacancies')).get('vacancies__sum')
+    project.max_applies_from_roles = vacancies if vacancies else 0
+    project.save()

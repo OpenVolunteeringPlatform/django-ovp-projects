@@ -168,3 +168,4 @@ v1.1.9
 v1.1.10[unreleased]
 -----------
 * Implement Project.hidden_address field.
+* Fix Project.max_applies_from_roles updating when creating/removing VolunteerRole
