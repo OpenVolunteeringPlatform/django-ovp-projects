@@ -5,6 +5,7 @@ from ovp_projects.models import Project
 from ovp_projects.models import VolunteerRole
 from ovp_projects.models import Work
 from ovp_projects.models import Job
+from ovp_projects.models import JobDate
 from ovp_users.models import User
 
 class ProjectModelTestCase(TestCase):
@@ -159,3 +160,19 @@ class JobModelTestCase(TestCase):
     human_time = lambda x: x.strftime("%d/%m/%Y")
 
     self.assertTrue(job.__str__() == "{}: {} ~ {}".format(project.name, human_time(start), human_time(end)))
+
+
+class JobDateModelTestCase(TestCase):
+  def test_str_method_returns_date_info(self):
+    """ Assert that JobDate.__str__() method returns .start_date and .end_date """
+    start = timezone.now()
+    end = timezone.now()
+
+    job = Job()
+    job.save()
+    date = JobDate(name="test", start_date=start, end_date=end, job=job)
+    date.save()
+
+    human_time = lambda x: x.strftime("%d/%m/%Y %T")
+
+    self.assertTrue(date.__str__() == "{}: {} ~ {}".format(date.name, human_time(start), human_time(end)))

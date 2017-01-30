@@ -5,12 +5,12 @@ class JobDate(models.Model):
   name = models.CharField(_('Label'), blank=True, null=True, max_length=20)
   start_date = models.DateTimeField(_('Start date'))
   end_date = models.DateTimeField(_('End date'))
-  job = models.ForeignKey('Job', on_delete=models.CASCADE, blank=True, null=True, related_name='dates', verbose_name=_('job'))
+  job = models.ForeignKey('Job', models.CASCADE, blank=True, null=True, related_name='dates', verbose_name=_('job'))
 
   def __str__(self):
     start_date = self.start_date and self.start_date.strftime("%d/%m/%Y %T") or '#'
     end_date = self.end_date and self.end_date.strftime("%d/%m/%Y %T") or '#'
-    return "{} : {} ~ {}".format(self.name, start_date, end_date)
+    return "{}: {} ~ {}".format(self.name, start_date, end_date)
 
   class Meta:
     app_label = 'ovp_projects'
