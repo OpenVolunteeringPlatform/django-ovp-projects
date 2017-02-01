@@ -5,6 +5,7 @@ from ovp_projects.serializers.disponibility import DisponibilitySerializer, add_
 from ovp_projects.serializers.job import JobSerializer
 from ovp_projects.serializers.work import WorkSerializer
 from ovp_projects.serializers.role import VolunteerRoleSerializer
+from ovp_projects.serializers.apply import ProjectAppliesSerializer
 
 from ovp_core import models as core_models
 from ovp_core import validators as core_validators
@@ -15,7 +16,7 @@ from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 from ovp_organizations.models import Organization
 
-from ovp_users.serializers import UserPublicRetrieveSerializer, UserApplyRetrieveSerializer, UserProjectRetrieveSerializer
+from ovp_users.serializers import UserPublicRetrieveSerializer, UserProjectRetrieveSerializer
 
 from rest_framework import serializers
 from rest_framework import exceptions
@@ -138,30 +139,6 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
   @add_disponibility_representation
   def to_representation(self, instance):
     return super(ProjectCreateUpdateSerializer, self).to_representation(instance)
-
-
-class ApplyCreateSerializer(serializers.ModelSerializer):
-  email = serializers.EmailField(required=False)
-
-  class Meta:
-    model = models.Apply
-    fields = ['username', 'email', 'phone', 'project', 'user']
-
-
-class ApplyRetrieveSerializer(serializers.ModelSerializer):
-  user = UserApplyRetrieveSerializer()
-
-  class Meta:
-    model = models.Apply
-    fields = ['email', 'date', 'canceled', 'canceled_date', 'status', 'user']
-
-
-class ProjectAppliesSerializer(serializers.ModelSerializer):
-  user = UserPublicRetrieveSerializer()
-
-  class Meta:
-    model = models.Apply
-    fields = ['date', 'user']
 
 
 class ProjectRetrieveSerializer(serializers.ModelSerializer):

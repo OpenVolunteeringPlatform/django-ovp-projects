@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 from ovp_projects.serializers import project as serializers
+from ovp_projects.serializers.apply import ApplyCreateSerializer, ApplyRetrieveSerializer
 from ovp_projects import models
 from ovp_projects import helpers
 from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember, OwnsOrIsOrganizationMember
@@ -150,9 +151,9 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     if self.action in ['create', 'partial_update']:
       return serializers.ProjectCreateUpdateSerializer
     if self.action in ['apply', 'unapply']:
-      return serializers.ApplyCreateSerializer
+      return ApplyCreateSerializer
     if self.action == 'applies':
-      return serializers.ApplyRetrieveSerializer
+      return ApplyRetrieveSerializer
     if self.action == 'manageable':
       return serializers.ProjectRetrieveSerializer
     if self.action == 'close':
