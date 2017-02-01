@@ -173,3 +173,5 @@ v1.1.10
 
 v1.1.11[unreleased]
 -----------
+* Apply.status is now a delimited choice field
+* Apply status returned by API is not an "key" field anymore, but a readable string, so instead of getting "applied" and "unapplied" you might now get "Applied" and "Canceled".

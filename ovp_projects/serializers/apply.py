@@ -1,4 +1,5 @@
 from ovp_projects import models
+from ovp_projects.models.apply import apply_status_choices
 
 from ovp_users.serializers import UserPublicRetrieveSerializer, UserApplyRetrieveSerializer
 
@@ -14,10 +15,14 @@ class ApplyCreateSerializer(serializers.ModelSerializer):
 
 class ApplyRetrieveSerializer(serializers.ModelSerializer):
   user = UserApplyRetrieveSerializer()
+  status = serializers.SerializerMethodField()
 
   class Meta:
     model = models.Apply
     fields = ['id', 'email', 'date', 'canceled', 'canceled_date', 'status', 'user']
+
+  def get_status(self, object):
+    return object.get_status_display()
 
 
 class ProjectAppliesSerializer(serializers.ModelSerializer):
