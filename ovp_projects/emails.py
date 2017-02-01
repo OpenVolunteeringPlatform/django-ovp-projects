@@ -1,4 +1,5 @@
 from ovp_core.emails import BaseMail
+from django.utils.translation import ugettext_lazy as _
 
 class ProjectMail(BaseMail):
   """
@@ -61,7 +62,7 @@ class ApplyMail(BaseMail):
     """
     context.update({
       'links': {
-        'answer_volunteer': 'mailto:{}?subject={}'.format(self.apply.volunteer.email, _('New volunteer on your project'))
+        'answer_volunteer': 'mailto:{}?subject={}'.format(self.apply.email, _('New volunteer on your project'))
       }
       })
     super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async)
