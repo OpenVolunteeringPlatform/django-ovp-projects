@@ -175,5 +175,9 @@ v1.1.11
 -----------
 * add 'links' prop to sendProjectCreated, sendProjectPublished contexts
 
-v1.1.12[unreleased]
+v1.1.12
+-----------
+* add max_applies to ProjectSearchSerializer
+
+v1.1.13[unreleased]
 -----------
