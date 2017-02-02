@@ -454,11 +454,11 @@ class ApplyTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(user=user)
 
-    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
-    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["non_field_errors"][0] == "The fields email, project must make a unique set.")
 
     response = client.get(reverse("project-detail", ["test-project"]), format="json")
@@ -477,7 +477,7 @@ class ApplyTestCase(TestCase):
     client.force_authenticate(user=user)
 
     # Apply
-    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
@@ -496,7 +496,7 @@ class ApplyTestCase(TestCase):
     self.assertTrue(project.applied_count == 0)
 
     # Reapply
-    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
@@ -533,7 +533,7 @@ class ApplyTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(user=user)
 
-    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Not found.")
     self.assertTrue(response.status_code == 404)
 
@@ -547,7 +547,7 @@ class ApplyTestCase(TestCase):
 
     client = APIClient()
 
-    response = client.post(reverse("project-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
     self.assertTrue(response.data["detail"] == "Authentication credentials were not provided.")
     self.assertTrue(response.status_code == 401)
 
@@ -561,7 +561,7 @@ class ApplyTestCase(TestCase):
 
     client = APIClient()
 
-    response = client.post(reverse("project-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), {"email": "testemail@test.com"}, format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 
@@ -576,7 +576,7 @@ class ApplyTestCase(TestCase):
 
     client = APIClient()
     client.force_authenticate(user=user)
-    response = client.post(reverse("project-apply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
 

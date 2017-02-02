@@ -68,32 +68,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     return response.Response(serializer.data)
 
   @decorators.detail_route(['POST'])
-  def apply(self, request, *args, **kwargs):
-    data = request.data
-    data.pop('user', None)
-
-    project = self.get_object()
-    data['project'] = project.id
-
-    if request.user.is_authenticated():
-      user = request.user
-      data['username'] = user.name
-      data['email'] = user.email
-      data['phone'] = user.phone
-      data['user'] = user.id
-
-    try:
-      existing_apply = models.Apply.objects.get(project=project, email=data['email'], canceled=True)
-      existing_apply.canceled = False
-      existing_apply.save()
-    except ObjectDoesNotExist:
-      apply_sr = self.get_serializer_class()(data=data, context=self.get_serializer_context())
-      apply_sr.is_valid(raise_exception=True)
-      apply_sr.save()
-
-    return response.Response({'detail': 'Successfully applied.'}, status=status.HTTP_200_OK)
-
-  @decorators.detail_route(['POST'])
   def unapply(self, request, *args, **kwargs):
     project = self.get_object()
     user = request.user
@@ -124,12 +98,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     if self.action == 'unapply':
       self.permission_classes = (permissions.IsAuthenticated, )
 
-    if self.action == 'apply':
-      if helpers.get_settings().get('UNAUTHENTICATED_APPLY', False):
-        self.permission_classes = ()
-      else:
-        self.permission_classes = (permissions.IsAuthenticated, )
-
     if self.action == 'retrieve':
       self.permission_classes = ()
 
@@ -144,7 +112,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_serializer_class(self):
     if self.action in ['create', 'partial_update']:
       return serializers.ProjectCreateUpdateSerializer
-    if self.action in ['apply', 'unapply']:
+    if self.action == 'unapply':
       return ApplyCreateSerializer
     if self.action == 'manageable':
       return serializers.ProjectRetrieveSerializer
@@ -158,21 +126,67 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
   """
   ApplyResourceViewSet resource endpoint
   """
+
+  ##################
+  # ViewSet routes #
+  ##################
   def list(self, request, *arg, **kwargs):
-    project = get_object_or_404(models.Project, slug=kwargs.get('project_slug', None))
+    project = self.get_project_object(**kwargs)
     applies = models.Apply.objects.filter(project=project)
     serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
 
     return response.Response(serializer.data)
 
+  @decorators.list_route(['POST'])
+  def apply(self, request, *args, **kwargs):
+    data = request.data
+    data.pop('user', None)
+
+    project = self.get_project_object(**kwargs)
+    applies = models.Apply.objects.filter(project=project)
+    data['project'] = project.id
+
+    if request.user.is_authenticated():
+      user = request.user
+      data['username'] = user.name
+      data['email'] = user.email
+      data['phone'] = user.phone
+      data['user'] = user.id
+
+    try:
+      existing_apply = models.Apply.objects.get(project=project, email=data['email'], canceled=True)
+      existing_apply.canceled = False
+      existing_apply.save()
+    except ObjectDoesNotExist:
+      apply_sr = self.get_serializer_class()(data=data, context=self.get_serializer_context())
+      apply_sr.is_valid(raise_exception=True)
+      apply_sr.save()
+
+    return response.Response({'detail': 'Successfully applied.'}, status=status.HTTP_200_OK)
+
+  ###################
+  # ViewSet methods #
+  ###################
   def get_serializer_class(self):
     if self.action == 'list':
       return ApplyRetrieveSerializer
 
+    if self.action == 'apply':
+      return ApplyCreateSerializer
+
   def get_permissions(self):
     request = self.get_serializer_context()['request']
 
-    if self.action in ['list']:
+    if self.action == 'list':
       self.permission_classes = (permissions.IsAuthenticated, ApplyRetrievePermission)
 
+    if self.action == 'apply':
+      if helpers.get_settings().get('UNAUTHENTICATED_APPLY', False):
+        self.permission_classes = ()
+      else:
+        self.permission_classes = (permissions.IsAuthenticated, )
+
     return super(ApplyResourceViewSet, self).get_permissions()
+
+  def get_project_object(self, *args, **kwargs):
+    return get_object_or_404(models.Project, slug=kwargs.get('project_slug', None))
