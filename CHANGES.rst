@@ -184,3 +184,6 @@ v1.2.0
 v1.2.1
 -----------
 * Fix test broken in last build
+
+v1.2.2[unreleased]
+-----------
