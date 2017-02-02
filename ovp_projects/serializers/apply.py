@@ -12,6 +12,12 @@ class ApplyCreateSerializer(serializers.ModelSerializer):
     model = models.Apply
     fields = ['username', 'email', 'phone', 'project', 'user']
 
+class ApplyUpdateSerializer(serializers.ModelSerializer):
+  status = serializers.ChoiceField(choices=apply_status_choices)
+
+  class Meta:
+    model = models.Apply
+    fields = ['status']
 
 class ApplyRetrieveSerializer(serializers.ModelSerializer):
   user = UserApplyRetrieveSerializer()

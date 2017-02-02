@@ -5,7 +5,7 @@ from django.http import Http404
 from ovp_projects.serializers import apply as serializers
 from ovp_projects import models
 from ovp_projects import helpers
-from ovp_projects.permissions import ApplyRetrievePermission
+from ovp_projects.permissions import ProjectApplyPermission
 
 from rest_framework import decorators
 from rest_framework import viewsets
@@ -24,6 +24,18 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
   def list(self, request, *arg, **kwargs):
     applies = self.get_queryset(**kwargs)
     serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
+
+    return response.Response(serializer.data)
+
+  def partial_update(self, request, *args, **kwargs):
+    instance = self.get_queryset(**kwargs).get(pk=kwargs['pk'])
+    serializer = self.get_serializer(instance, data=request.data, partial=True, context=self.get_serializer_context())
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    if getattr(instance, '_prefetched_objects_cache', None): #pragma: no cover
+      instance = self.get_object()
+      serializer = self.get_serializer(instance)
 
     return response.Response(serializer.data)
 
@@ -79,14 +91,17 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
     if self.action == 'list':
       return serializers.ApplyRetrieveSerializer
 
+    if self.action == 'partial_update':
+      return serializers.ApplyUpdateSerializer
+
     if self.action in ['apply', 'unapply']:
       return serializers.ApplyCreateSerializer
 
   def get_permissions(self):
     request = self.get_serializer_context()['request']
 
-    if self.action == 'list':
-      self.permission_classes = (permissions.IsAuthenticated, ApplyRetrievePermission)
+    if self.action in ['list', 'partial_update']:
+      self.permission_classes = (permissions.IsAuthenticated, ProjectApplyPermission)
 
     if self.action == 'apply':
       if helpers.get_settings().get('UNAUTHENTICATED_APPLY', False):

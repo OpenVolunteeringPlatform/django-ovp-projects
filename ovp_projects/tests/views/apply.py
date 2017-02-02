@@ -189,3 +189,72 @@ class ProjectAppliesRetrievingTestCase(TestCase):
     self.client.force_authenticate(user=self.owner)
     response = self.client.get(reverse("project-applies-list", ["inexistent"]), format="json")
     self.assertTrue(response.status_code == 404)
+
+
+class ProjectApplyStatusUpdateTestCase(TestCase):
+  def setUp(self):
+    # Create organization
+    self.organization_owner = User.objects.create_user(email="organization_owner@gmail.com", password="test_owner")
+    self.organization_member = User.objects.create_user(email="organization_member@gmail.com", password="test_member")
+    self.organization = Organization(name="test", type=0, owner=self.organization_owner)
+    self.organization.save()
+    self.organization.members.add(self.organization_member)
+
+    # Create project
+    self.project_owner = User.objects.create_user(email="owner_user@gmail.com", password="test_owner")
+    self.project = Project(name="test project", details="abc", description="abc", owner=self.project_owner, organization=self.organization)
+    self.project.save()
+
+    # Apply
+    self.applier = User.objects.create_user(email="apply_user@gmail.com", password="apply_user")
+    self.client = APIClient()
+    self.client.force_authenticate(user=self.applier)
+    response = self.client.post(reverse("project-applies-apply", ["test-project"]), format="json")
+    self.assertTrue(response.data["detail"] == "Successfully applied.")
+    self.assertTrue(response.status_code == 200)
+
+    # Get apply
+    self.apply_id = Apply.objects.last().pk
+
+  def _assert_can_update_apply(self):
+    # Update apply
+    data = {"status": "unapplied"}
+    response = self.client.patch(reverse("project-applies-detail", ["test-project", self.apply_id]), data=data, format="json")
+    self.assertTrue(response.status_code == 200)
+    self.assertTrue(response.data["status"] == "unapplied")
+
+    # Get apply
+    response = self.client.get(reverse("project-applies-list", ["test-project"]), format="json")
+    self.assertTrue(response.data[0]["status"] == "Canceled")
+
+  def test_project_owner_can_update_apply_status(self):
+    """Assert that project owner can update apply status"""
+    self.client.force_authenticate(user=self.project_owner)
+    self._assert_can_update_apply()
+
+  def test_organization_owner_can_update_apply_status(self):
+    """Assert that organization owner can update apply status"""
+    self.client.force_authenticate(user=self.organization_owner)
+    self._assert_can_update_apply()
+
+  def test_organization_member_can_update_apply_status(self):
+    """Assert that organization member can update apply status"""
+    self.client.force_authenticate(user=self.organization_member)
+    self._assert_can_update_apply()
+
+  def test_unauthorized_user_cant_update_status(self):
+    """Assert that organization member can update apply status"""
+    client = APIClient()
+    response = self.client.patch(reverse("project-applies-detail", ["test-project", self.apply_id]), data={"status": "unapplied"}, format="json")
+    self.assertTrue(response.status_code == 403)
+
+    client.force_authenticate(user=self.applier)
+    response = self.client.patch(reverse("project-applies-detail", ["test-project", self.apply_id]), data={"status": "unapplied"}, format="json")
+    self.assertTrue(response.status_code == 403)
+
+  def test_update_to_invalid_status(self):
+    """Assert that it's not possible to update to invalid apply status"""
+    self.client.force_authenticate(user=self.project_owner)
+    response = self.client.patch(reverse("project-applies-detail", ["test-project", self.apply_id]), data={"status": "invalid-status"}, format="json")
+    self.assertTrue(response.status_code == 400)
+    self.assertTrue(response.data["status"] == ["\"invalid-status\" is not a valid choice."])

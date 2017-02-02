@@ -49,7 +49,7 @@ class ProjectRetrieveOwnsOrIsOrganizationMember(permissions.BasePermission):
 # Apply Resource permissions
 ##############################
 
-class ApplyRetrievePermission(permissions.BasePermission):
+class ProjectApplyPermission(permissions.BasePermission):
   """ Permission that only allows the project owner, organization owner
       or organization member to retrieve a full list of applies for a project """
   def has_permission(self, request, view):

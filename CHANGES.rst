@@ -173,8 +173,9 @@ v1.1.10
 
 v1.1.11[unreleased]
 -----------
-* Apply.status is now a delimited choice field
-* Apply status returned by API is not an "key" field anymore, but a readable string, so instead of getting "applied" and "unapplied" you might now get "Applied" and "Canceled".
+* Apply.status is now a delimited choice field.
+* Apply.status returned by API is not an "key" field anymore, but a readable string, so instead of getting "applied" and "unapplied" you might now get "Applied" and "Canceled".
+* Introduced route /projects/{project.slug}/applies/{apply.id}/ which can be PATCHED by the project owner, organization owner or organization member to modify the status of an apply by a valid key choice
 * Apply and unapply routes are changed:
 /projects/{slug}/apply => /projects/{slug}/applies/apply
 /projects/{slug}/unapply => /projects/{slug}/applies/unapply
