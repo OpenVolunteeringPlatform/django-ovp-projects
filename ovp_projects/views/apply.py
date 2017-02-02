@@ -116,9 +116,6 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
     return super(ApplyResourceViewSet, self).get_permissions()
 
   def get_project_object(self, *args, **kwargs):
-    slug=kwargs.get('project_slug', None)
+    slug=kwargs.get('project_slug')
 
-    if slug:
-      return get_object_or_404(models.Project, slug=slug)
-    else:
-      raise Http404
+    return get_object_or_404(models.Project, slug=slug)

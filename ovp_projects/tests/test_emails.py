@@ -88,7 +88,9 @@ class TestEmailTriggers(TestCase):
     project.save()
 
     mail.outbox = [] # Mails sent before applying don't matter
-    apply = Apply(project=project, user=volunteer, email=volunteer.email, canceled=True)
+    apply = Apply(project=project, user=volunteer, email=volunteer.email)
+    apply.save()
+    apply.canceled = True
     apply.save()
 
     recipients = [x.to[0] for x in mail.outbox]

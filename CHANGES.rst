@@ -180,3 +180,7 @@ v1.2.0
 * Apply and unapply routes are changed:
 /projects/{slug}/apply/ => /projects/{slug}/applies/apply/
 /projects/{slug}/unapply/ => /projects/{slug}/applies/unapply/
+
+v1.2.1
+-----------
+* Fix test broken in last build
