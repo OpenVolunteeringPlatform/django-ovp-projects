@@ -12,11 +12,6 @@ class ProjectMail(BaseMail):
     """
     Sent when user creates a project
     """
-    context.update({
-      'links': {
-        'contact_email': 'diadasboasacoes@atados.com.br'
-      }
-      })
     return self.sendEmail('projectCreated', 'Project created', context)
 
 
@@ -24,11 +19,6 @@ class ProjectMail(BaseMail):
     """
     Sent when project is published
     """
-    context.update({
-      'links': {
-        'project_page': 'https://project.page.to'
-      }
-      })
     return self.sendEmail('projectPublished', 'Project published', context)
 
 
@@ -60,11 +50,6 @@ class ApplyMail(BaseMail):
     """
     Sent to project owner when user applies to a project
     """
-    context.update({
-      'links': {
-        'answer_volunteer': 'mailto:{}?subject={}'.format(self.apply.email, _('New volunteer on your project'))
-      }
-      })
     super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async)
     return self.sendEmail('volunteerApplied-ToOwner', 'New volunteer', context)
 
