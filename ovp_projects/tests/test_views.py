@@ -598,6 +598,7 @@ class ApplyTestCase(TestCase):
     url = reverse("project-applies", ["test-project", "csv"])
     response = client.get(url, format="csv")
     self.assertTrue(response.status_code == 200)
+    self.assertTrue(response["Content-Type"] == "text/csv; charset=utf-8")
 
     client = APIClient()
     client.force_authenticate(user=user)
