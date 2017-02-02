@@ -1,8 +1,11 @@
 from rest_framework import permissions
+
 from ovp_organizations.models import Organization
 
 
 class ProjectCreateOwnsOrIsOrganizationMember(permissions.BasePermission):
+  """ Permission that only allows an organization owner or member to create
+      a project for the given organization. """
   def has_permission(self, request, view):
     organization_pk = request.data.get('organization', None)
 
@@ -21,12 +24,14 @@ class ProjectCreateOwnsOrIsOrganizationMember(permissions.BasePermission):
     return False
 
 
-class OwnsOrIsOrganizationMember(permissions.BasePermission):
+class ProjectRetrieveOwnsOrIsOrganizationMember(permissions.BasePermission):
+  """ Permission that only allows the project owner, organization owner
+      or organization member to retrieve/modify a existing project. """
   def has_object_permission(self, request, view, obj):
     if request.user.is_authenticated:
       if obj.owner == request.user:
         return True
       if obj.organization:
-        if request.user in obj.organization.members.all():
+        if request.user in obj.organization.members.all() or request.user == obj.organization.owner:
           return True
     return False

@@ -5,7 +5,8 @@ from ovp_projects.serializers import project as serializers
 from ovp_projects.serializers.apply import ApplyCreateSerializer, ApplyRetrieveSerializer
 from ovp_projects import models
 from ovp_projects import helpers
-from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember, OwnsOrIsOrganizationMember
+from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember
+from ovp_projects.permissions import ProjectRetrieveOwnsOrIsOrganizationMember
 
 from ovp_users import models as users_models
 
@@ -125,7 +126,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
         self.permission_classes = (permissions.IsAuthenticated, ProjectCreateOwnsOrIsOrganizationMember)
 
     if self.action in ['applies', 'partial_update']:
-      self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
+      self.permission_classes = (permissions.IsAuthenticated, ProjectRetrieveOwnsOrIsOrganizationMember)
 
     if self.action == 'unapply':
       self.permission_classes = (permissions.IsAuthenticated, )
@@ -143,7 +144,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       self.permission_classes = (permissions.IsAuthenticated, )
 
     if self.action == 'close':
-      self.permission_classes = (permissions.IsAuthenticated, OwnsOrIsOrganizationMember, )
+      self.permission_classes = (permissions.IsAuthenticated, ProjectRetrieveOwnsOrIsOrganizationMember)
 
     return super(ProjectResourceViewSet, self).get_permissions()
 
