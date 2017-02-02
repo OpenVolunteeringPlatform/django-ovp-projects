@@ -485,7 +485,7 @@ class ApplyTestCase(TestCase):
     self.assertTrue(project.applied_count == 1)
 
     # Unapply
-    response = client.post(reverse("project-unapply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-unapply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Successfully unapplied.")
 
     a = Apply.objects.last()
@@ -517,12 +517,12 @@ class ApplyTestCase(TestCase):
 
     client = APIClient()
 
-    response = client.post(reverse("project-unapply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-unapply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Authentication credentials were not provided.")
     self.assertTrue(response.status_code == 401)
 
     client.force_authenticate(user=user)
-    response = client.post(reverse("project-unapply", ["test-project"]), format="json")
+    response = client.post(reverse("project-applies-unapply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "This is user is not applied to this project.")
     self.assertTrue(response.status_code == 400)
 

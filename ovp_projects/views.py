@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 from ovp_projects.serializers import project as serializers
 from ovp_projects.serializers.apply import ApplyCreateSerializer, ApplyRetrieveSerializer
@@ -67,20 +68,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     serializer = self.get_serializer_class()(projects, many=True, context=self.get_serializer_context())
     return response.Response(serializer.data)
 
-  @decorators.detail_route(['POST'])
-  def unapply(self, request, *args, **kwargs):
-    project = self.get_object()
-    user = request.user
-
-    try:
-      existing_apply = models.Apply.objects.get(project=project, email=user.email, canceled=False)
-      existing_apply.canceled = True
-      existing_apply.save()
-    except ObjectDoesNotExist:
-      return response.Response({'detail': 'This is user is not applied to this project.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    return response.Response({'detail': 'Successfully unapplied.'}, status=status.HTTP_200_OK)
-
 
   # We need to override get_permissions and get_serializer_class to work
   # with multiple serializers and permissions
@@ -94,9 +81,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     if self.action == 'partial_update':
       self.permission_classes = (permissions.IsAuthenticated, ProjectRetrieveOwnsOrIsOrganizationMember)
-
-    if self.action == 'unapply':
-      self.permission_classes = (permissions.IsAuthenticated, )
 
     if self.action == 'retrieve':
       self.permission_classes = ()
@@ -112,8 +96,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   def get_serializer_class(self):
     if self.action in ['create', 'partial_update']:
       return serializers.ProjectCreateUpdateSerializer
-    if self.action == 'unapply':
-      return ApplyCreateSerializer
     if self.action == 'manageable':
       return serializers.ProjectRetrieveSerializer
     if self.action == 'close':
@@ -131,8 +113,7 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
   # ViewSet routes #
   ##################
   def list(self, request, *arg, **kwargs):
-    project = self.get_project_object(**kwargs)
-    applies = models.Apply.objects.filter(project=project)
+    applies = self.get_queryset(**kwargs)
     serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
 
     return response.Response(serializer.data)
@@ -143,7 +124,6 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
     data.pop('user', None)
 
     project = self.get_project_object(**kwargs)
-    applies = models.Apply.objects.filter(project=project)
     data['project'] = project.id
 
     if request.user.is_authenticated():
@@ -154,7 +134,7 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
       data['user'] = user.id
 
     try:
-      existing_apply = models.Apply.objects.get(project=project, email=data['email'], canceled=True)
+      existing_apply = self.get_queryset(**kwargs).get(email=data['email'], canceled=True)
       existing_apply.canceled = False
       existing_apply.save()
     except ObjectDoesNotExist:
@@ -164,14 +144,33 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
 
     return response.Response({'detail': 'Successfully applied.'}, status=status.HTTP_200_OK)
 
+  @decorators.list_route(['POST'])
+  def unapply(self, request, *args, **kwargs):
+    project = self.get_project_object(**kwargs)
+    user = request.user
+
+    try:
+      existing_apply = self.get_queryset(**kwargs).get(email=user.email, canceled=False)
+      existing_apply.canceled = True
+      existing_apply.save()
+    except ObjectDoesNotExist:
+      return response.Response({'detail': 'This is user is not applied to this project.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return response.Response({'detail': 'Successfully unapplied.'}, status=status.HTTP_200_OK)
+
+
   ###################
   # ViewSet methods #
   ###################
+  def get_queryset(self, *args, **kwargs):
+    project = self.get_project_object(**kwargs)
+    return models.Apply.objects.filter(project=project)
+
   def get_serializer_class(self):
     if self.action == 'list':
       return ApplyRetrieveSerializer
 
-    if self.action == 'apply':
+    if self.action in ['apply', 'unapply']:
       return ApplyCreateSerializer
 
   def get_permissions(self):
@@ -186,7 +185,16 @@ class ApplyResourceViewSet(viewsets.GenericViewSet):
       else:
         self.permission_classes = (permissions.IsAuthenticated, )
 
+    if self.action == 'unapply':
+      self.permission_classes = (permissions.IsAuthenticated, )
+
+
     return super(ApplyResourceViewSet, self).get_permissions()
 
   def get_project_object(self, *args, **kwargs):
-    return get_object_or_404(models.Project, slug=kwargs.get('project_slug', None))
+    slug=kwargs.get('project_slug', None)
+
+    if slug:
+      return get_object_or_404(models.Project, slug=slug)
+    else:
+      raise Http404
