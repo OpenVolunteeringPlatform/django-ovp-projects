@@ -1,17 +1,10 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 
 from ovp_projects.serializers import project as serializers
-from ovp_projects.serializers.apply import ApplyCreateSerializer, ApplyRetrieveSerializer
 from ovp_projects import models
 from ovp_projects import helpers
 from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember
 from ovp_projects.permissions import ProjectRetrieveOwnsOrIsOrganizationMember
-from ovp_projects.permissions import ApplyRetrievePermission
-
-from ovp_users import models as users_models
 
 from rest_framework import decorators
 from rest_framework import mixins
@@ -29,6 +22,9 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
   lookup_field = 'slug'
   lookup_value_regex = '[^/]+' # default is [^/.]+ - here we're allowing dots in the url slug field
 
+  ##################
+  # ViewSet routes #
+  ##################
   def create(self, request, *args, **kwargs):
     request.data['owner'] = request.user.pk
 
@@ -38,7 +34,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     headers = self.get_success_headers(serializer.data)
     return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 
   def partial_update(self, request, *args, **kwargs):
     """ We do not include the mixin as we want only PATCH and no PUT """
@@ -69,8 +64,9 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     return response.Response(serializer.data)
 
 
-  # We need to override get_permissions and get_serializer_class to work
-  # with multiple serializers and permissions
+  ###################
+  # ViewSet methods #
+  ###################
   def get_permissions(self):
     request = self.get_serializer_context()['request']
     if self.action == 'create':
@@ -102,99 +98,3 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       return serializers.ProjectRetrieveSerializer
 
     return serializers.ProjectRetrieveSerializer
-
-
-class ApplyResourceViewSet(viewsets.GenericViewSet):
-  """
-  ApplyResourceViewSet resource endpoint
-  """
-
-  ##################
-  # ViewSet routes #
-  ##################
-  def list(self, request, *arg, **kwargs):
-    applies = self.get_queryset(**kwargs)
-    serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
-
-    return response.Response(serializer.data)
-
-  @decorators.list_route(['POST'])
-  def apply(self, request, *args, **kwargs):
-    data = request.data
-    data.pop('user', None)
-
-    project = self.get_project_object(**kwargs)
-    data['project'] = project.id
-
-    if request.user.is_authenticated():
-      user = request.user
-      data['username'] = user.name
-      data['email'] = user.email
-      data['phone'] = user.phone
-      data['user'] = user.id
-
-    try:
-      existing_apply = self.get_queryset(**kwargs).get(email=data['email'], canceled=True)
-      existing_apply.canceled = False
-      existing_apply.save()
-    except ObjectDoesNotExist:
-      apply_sr = self.get_serializer_class()(data=data, context=self.get_serializer_context())
-      apply_sr.is_valid(raise_exception=True)
-      apply_sr.save()
-
-    return response.Response({'detail': 'Successfully applied.'}, status=status.HTTP_200_OK)
-
-  @decorators.list_route(['POST'])
-  def unapply(self, request, *args, **kwargs):
-    project = self.get_project_object(**kwargs)
-    user = request.user
-
-    try:
-      existing_apply = self.get_queryset(**kwargs).get(email=user.email, canceled=False)
-      existing_apply.canceled = True
-      existing_apply.save()
-    except ObjectDoesNotExist:
-      return response.Response({'detail': 'This is user is not applied to this project.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    return response.Response({'detail': 'Successfully unapplied.'}, status=status.HTTP_200_OK)
-
-
-  ###################
-  # ViewSet methods #
-  ###################
-  def get_queryset(self, *args, **kwargs):
-    project = self.get_project_object(**kwargs)
-    return models.Apply.objects.filter(project=project)
-
-  def get_serializer_class(self):
-    if self.action == 'list':
-      return ApplyRetrieveSerializer
-
-    if self.action in ['apply', 'unapply']:
-      return ApplyCreateSerializer
-
-  def get_permissions(self):
-    request = self.get_serializer_context()['request']
-
-    if self.action == 'list':
-      self.permission_classes = (permissions.IsAuthenticated, ApplyRetrievePermission)
-
-    if self.action == 'apply':
-      if helpers.get_settings().get('UNAUTHENTICATED_APPLY', False):
-        self.permission_classes = ()
-      else:
-        self.permission_classes = (permissions.IsAuthenticated, )
-
-    if self.action == 'unapply':
-      self.permission_classes = (permissions.IsAuthenticated, )
-
-
-    return super(ApplyResourceViewSet, self).get_permissions()
-
-  def get_project_object(self, *args, **kwargs):
-    slug=kwargs.get('project_slug', None)
-
-    if slug:
-      return get_object_or_404(models.Project, slug=slug)
-    else:
-      raise Http404
