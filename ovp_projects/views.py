@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from ovp_projects.serializers import project as serializers
 from ovp_projects.serializers.apply import ApplyCreateSerializer, ApplyRetrieveSerializer
@@ -7,6 +8,7 @@ from ovp_projects import models
 from ovp_projects import helpers
 from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember
 from ovp_projects.permissions import ProjectRetrieveOwnsOrIsOrganizationMember
+from ovp_projects.permissions import ApplyRetrievePermission
 
 from ovp_users import models as users_models
 
@@ -105,15 +107,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     return response.Response({'detail': 'Successfully unapplied.'}, status=status.HTTP_200_OK)
 
-  @decorators.detail_route(['GET'])
-  def applies(self, request, *arg, **kwargs):
-    project = self.get_object()
-    applies = models.Apply.objects.filter(project=project)
-
-    serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
-
-    return response.Response(serializer.data)
-
 
   # We need to override get_permissions and get_serializer_class to work
   # with multiple serializers and permissions
@@ -125,7 +118,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       else:
         self.permission_classes = (permissions.IsAuthenticated, ProjectCreateOwnsOrIsOrganizationMember)
 
-    if self.action in ['applies', 'partial_update']:
+    if self.action == 'partial_update':
       self.permission_classes = (permissions.IsAuthenticated, ProjectRetrieveOwnsOrIsOrganizationMember)
 
     if self.action == 'unapply':
@@ -153,11 +146,33 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       return serializers.ProjectCreateUpdateSerializer
     if self.action in ['apply', 'unapply']:
       return ApplyCreateSerializer
-    if self.action == 'applies':
-      return ApplyRetrieveSerializer
     if self.action == 'manageable':
       return serializers.ProjectRetrieveSerializer
     if self.action == 'close':
       return serializers.ProjectRetrieveSerializer
 
     return serializers.ProjectRetrieveSerializer
+
+
+class ApplyResourceViewSet(viewsets.GenericViewSet):
+  """
+  ApplyResourceViewSet resource endpoint
+  """
+  def list(self, request, *arg, **kwargs):
+    project = get_object_or_404(models.Project, slug=kwargs.get('project_slug', None))
+    applies = models.Apply.objects.filter(project=project)
+    serializer = self.get_serializer_class()(applies, many=True, context=self.get_serializer_context())
+
+    return response.Response(serializer.data)
+
+  def get_serializer_class(self):
+    if self.action == 'list':
+      return ApplyRetrieveSerializer
+
+  def get_permissions(self):
+    request = self.get_serializer_context()['request']
+
+    if self.action in ['list']:
+      self.permission_classes = (permissions.IsAuthenticated, ApplyRetrievePermission)
+
+    return super(ApplyResourceViewSet, self).get_permissions()

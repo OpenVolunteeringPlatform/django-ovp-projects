@@ -583,7 +583,7 @@ class ApplyTestCase(TestCase):
 
     client = APIClient()
     client.force_authenticate(user=owner)
-    response = client.get(reverse("project-applies", ["test-project"]), format="json")
+    response = client.get(reverse("project-applies-list", ["test-project"]), format="json")
     self.assertTrue(response.status_code == 200)
     self.assertTrue("email" in response.data[0])
     self.assertTrue("date" in response.data[0])
@@ -595,12 +595,15 @@ class ApplyTestCase(TestCase):
     self.assertTrue("email" in response.data[0]["user"])
     self.assertTrue("phone" in response.data[0]["user"])
 
-    url = reverse("project-applies", ["test-project", "csv"])
+    url = reverse("project-applies-list", ["test-project", "csv"])
     response = client.get(url, format="csv")
     self.assertTrue(response.status_code == 200)
     self.assertTrue(response["Content-Type"] == "text/csv; charset=utf-8")
 
     client = APIClient()
     client.force_authenticate(user=user)
-    response = client.get(reverse("project-applies", ["test-project"]), format="json")
+    response = client.get(reverse("project-applies-list", ["test-project"]), format="json")
     self.assertTrue(response.status_code == 403)
+
+    response = client.get(reverse("project-applies-list", ["inexistent"]), format="json")
+    self.assertTrue(response.status_code == 404)
