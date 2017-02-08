@@ -185,6 +185,9 @@ v1.2.1
 -----------
 * Fix test broken in last build
 
-v1.2.2[unreleased]
+v1.2.2
 -----------
 * Add raw check on update_max_applies_from_roles signals
+
+v1.2.3[unreleased]
+-----------
