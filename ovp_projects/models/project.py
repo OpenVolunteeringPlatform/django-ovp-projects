@@ -150,10 +150,11 @@ class VolunteerRole(models.Model):
 @receiver(post_save, sender=VolunteerRole)
 @receiver(post_delete, sender=VolunteerRole)
 def update_max_applies_from_roles(sender, **kwargs):
-  project = kwargs['instance'].project
+  if not kwargs.get('raw', False):
+    project = kwargs['instance'].project
 
-  if project:
-    queryset = VolunteerRole.objects.filter(project=project)
-    vacancies = queryset.aggregate(Sum('vacancies')).get('vacancies__sum')
-    project.max_applies_from_roles = vacancies if vacancies else 0
-    project.save()
+    if project:
+      queryset = VolunteerRole.objects.filter(project=project)
+      vacancies = queryset.aggregate(Sum('vacancies')).get('vacancies__sum')
+      project.max_applies_from_roles = vacancies if vacancies else 0
+      project.save()

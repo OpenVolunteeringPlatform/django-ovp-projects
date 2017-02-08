@@ -187,3 +187,4 @@ v1.2.1
 
 v1.2.2[unreleased]
 -----------
+* Add raw check on update_max_applies_from_roles signals
