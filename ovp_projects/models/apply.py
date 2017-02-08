@@ -18,7 +18,7 @@ class Apply(models.Model):
   canceled_date = models.DateTimeField(_("canceled date"), blank=True, null=True)
 
   username = models.CharField(_('name'), max_length=200, blank=True, null=True)
-  email = models.CharField(_('email'), max_length=200, blank=True, null=True)
+  email = models.CharField(_('email'), max_length=190, blank=True, null=True)
   phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
 
   def __init__(self, *args, **kwargs):

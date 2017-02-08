@@ -191,3 +191,4 @@ v1.2.2
 
 v1.2.3[unreleased]
 -----------
+* Set max_length for Apply.email to 190 so InnoDB stops complaining about index size with utf8mb4
