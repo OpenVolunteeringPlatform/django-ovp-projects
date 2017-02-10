@@ -18,6 +18,7 @@ class ProjectMail(BaseMail):
   def sendProjectPublished(self, context):
     """
     Sent when project is published
+    context should have a Project instance as project
     """
     return self.sendEmail('projectPublished', 'Project published', context)
 
