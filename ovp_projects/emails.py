@@ -20,7 +20,7 @@ class ProjectMail(BaseMail):
     Sent when project is published
     context should have a Project instance as project
     """
-    context['project_country_code'] = context['project'].get_country_code()
+    context['project_country_code'] = context['project'].address.get_country_code()
     return self.sendEmail('projectPublished', 'Project published', context)
 
 
