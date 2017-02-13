@@ -4,6 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 class ProjectMail(BaseMail):
   """
   This class is responsible for firing emails for Project related actions
+
+  Context should always include a project instance.
   """
   def __init__(self, project, async_mail=None):
     super(ProjectMail, self).__init__(project.owner.email, async_mail)
@@ -18,9 +20,7 @@ class ProjectMail(BaseMail):
   def sendProjectPublished(self, context):
     """
     Sent when project is published
-    context should have a Project instance as project
     """
-    context['project_country_code'] = context['project'].address.get_country_code()
     return self.sendEmail('projectPublished', 'Project published', context)
 
 
