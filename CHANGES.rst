@@ -193,6 +193,8 @@ v1.2.3
 -----------
 * Set max_length for Apply.email to 190 so InnoDB stops complaining about index size with utf8mb4
 * Fix hide_address decorator in case Project.hidden_address == False
+* Make 'canceled_date' and 'date' read-only on adm interface
 
 v1.2.4[unreleased]
 -----------
+
