@@ -197,6 +197,13 @@ class ProjectWithOrganizationTestCase(TestCase):
     self.assertTrue(response.data["address"] == None)
     self.assertTrue(response.data["hidden_address"] == True)
 
+    # Project without organization
+    self.client.force_authenticate(self.second_user)
+    Project.objects.filter(slug="test-project").update(organization = None)
+    response = self.client.get(reverse("project-detail", ["test-project"]), format="json")
+    self.assertTrue(response.data["address"] == None)
+    self.assertTrue(response.data["hidden_address"] == True)
+
 
 class ManageableProjectsRouteTestCase(TestCase):
   def setUp(self):
