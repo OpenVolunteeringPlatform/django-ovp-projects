@@ -7,6 +7,8 @@ from ovp_projects import emails
 apply_status_choices = (
     ('applied', 'Applied'),
     ('unapplied', 'Canceled'),
+    ('confirmed-volunteer', 'Confirmed Volunteer'),
+    ('not-volunteer', 'Not a Volunteer'),
 )
 
 class Apply(models.Model):
