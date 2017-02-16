@@ -8,7 +8,7 @@ class ProjectMail(BaseMail):
   Context should always include a project instance.
   """
   def __init__(self, project, async_mail=None):
-    super(ProjectMail, self).__init__(project.owner.email, async_mail)
+    super(ProjectMail, self).__init__(project.owner.email, async_mail, project.owner.locale)
 
   def sendProjectCreated(self, context={}):
     """
@@ -36,10 +36,11 @@ class ApplyMail(BaseMail):
   """
   This class is responsible for firing emails for apply related actions
   """
-  def __init__(self, apply, async_mail=None):
+  def __init__(self, apply, async_mail=None, locale=None):
     self.apply = apply
     self.async = async_mail
-    super(ApplyMail, self).__init__(apply.email, async_mail)
+    locale = locale or (apply.user and apply.user.locale)
+    super(ApplyMail, self).__init__(apply.email, async_mail, locale)
 
   def sendAppliedToVolunteer(self, context={}):
     """
@@ -52,7 +53,7 @@ class ApplyMail(BaseMail):
     """
     Sent to project owner when user applies to a project
     """
-    super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async)
+    super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async, self.apply.project.owner.locale)
     return self.sendEmail('volunteerApplied-ToOwner', 'New volunteer', context)
 
 
@@ -67,5 +68,5 @@ class ApplyMail(BaseMail):
     """
     Sent to project owner when user unapplies from a project
     """
-    super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async)
+    super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async, self.apply.project.owner.locale)
     return self.sendEmail('volunteerUnapplied-ToOwner', 'Volunteer unapplied from project', context)
