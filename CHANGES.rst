@@ -202,5 +202,9 @@ v1.2.4
 * Remove address_validate validtor on GoogleAddressSerializer
 * Add admin notification on project created
 
-v1.2.5[unreleased]
+v1.2.5
+-----------
+* Remove admin notification
+
+v1.2.6[unreleased]
 -----------
