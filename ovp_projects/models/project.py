@@ -52,8 +52,6 @@ class Project(models.Model):
   def mailing(self, async_mail=None):
     return emails.ProjectMail(self, async_mail)
 
-  def admin_mailing(self, async_mail=None):
-    return emails.ProjectAdminMail(self, async_mail)
   '''
   Data methods
   '''
@@ -91,7 +89,6 @@ class Project(models.Model):
       # Project being created
       self.slug = self.generate_slug()
       self.mailing().sendProjectCreated({'project': self})
-      self.admin_mailing().sendProjectCreated({'project': self})
 
     # If there is no description, take 100 chars from the details
     if not self.description:
