@@ -209,3 +209,10 @@ v1.2.5
 v1.2.6
 -----------
 * Fix requirements
+
+v1.2.7
+-----------
+* Upgrade ovp-core requirement
+
+v1.2.8[unreleased]
+-----------
