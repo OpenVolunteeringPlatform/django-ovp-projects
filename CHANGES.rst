@@ -206,6 +206,6 @@ v1.2.5
 -----------
 * Remove admin notification
 
-v1.2.6[unreleased]
+v1.2.6
 -----------
 * Fix requirements
