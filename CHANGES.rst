@@ -199,3 +199,4 @@ v1.2.4[unreleased]
 * Make 'canceled_date' and 'date' read-only on adm interface
 * Add Crowdfunding Field and add public_project on serializers
 * Add confirmed-volunteer and not-volunteer statuses to Apply
+* Remove address_validate validtor on GoogleAddressSerializer
