@@ -30,7 +30,7 @@ class ApplyAdmin(admin.ModelAdmin, CountryFilterMixin):
     ]
 
   readonly_fields = [
-    'id', 'project__name', 'user', 'project__organization__name', 'date'
+    'id', 'project__name', 'user', 'project__organization__name', 'canceled_date', 'date'
     ]
 
   raw_id_fields = []
