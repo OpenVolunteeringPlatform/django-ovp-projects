@@ -5,10 +5,17 @@ from django.template.defaultfilters import slugify
 from django.db.models import Sum
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from ovp_core.helpers import get_settings
+
+#from ovp_projects.serializers import project as serializers
 
 from ovp_projects.models.apply import Apply
 from ovp_projects import emails
 
+import urllib.request as request
+import urllib.parse as parse
+
+import json
 
 class Project(models.Model):
   """
@@ -99,7 +106,72 @@ class Project(models.Model):
 
     self.modified_date = timezone.now()
 
-    return super(Project, self).save(*args, **kwargs)
+    super(Project, self).save(*args, **kwargs)
+
+    """""""""
+    ATADOS API INTEGRATION
+    """""""""
+    s = get_settings()
+    if s.get('ATADOS_API_INTEGRATION', None):
+
+      data = {'client_id': 'da4bc76b44b73cda7e4d', 'client_secret': '3414d4cc0fb94521f0361ee5aba1b7eb73b5a468', 'grant_type': 'password', 'password': '5H7kGj5sL4', 'remember': True, 'username': 'gddlatam@gmail.com'}
+      data = parse.urlencode(data).encode('UTF-8')
+      auth = request.Request(s.get('ATADOS_URL')+'/v1/oauth2/access_token/', data)
+      auth.add_header('Content-Type', 'application/x-www-form-urlencoded')
+      auth_open = request.urlopen(auth)
+      content = auth_open.read().decode('UTF-8')
+      token = json.loads(content)
+
+      data = {
+        "project": {
+          "name": self.name,
+          "email": self.owner.email,
+          "phone": self.owner.phone,
+          "details": self.details,
+          "description": self.description,
+          "responsible": self.owner.name,
+          "skills": [],
+          "causes": [],
+          "published": self.published,
+          "gdd_highlighted": self.highlighted,
+          "gdd": True,
+          "gdd_refer": self.slug,
+          "work": {
+            "can_be_done_remotely": False,
+            "description": self.description
+          },
+          "gdd_json": {
+            "image": self.image.image_medium.url,
+            "organization": {
+              "name": self.organization.name,
+              "image": self.organization.image.image_medium.url
+            }
+          },
+          "address": {
+            "addr": {
+              "formatted_address": self.address.typed_address,
+              "typed_address2": self.address.typed_address2,
+              "address_components": [
+                {
+                  "long_name": self.address.typed_address,
+                  "short_name": self.address.typed_address 
+                }
+              ]
+            },
+          }
+        }
+      }
+
+      data = json.dumps(data).encode('UTF-8')
+
+      req = request.Request(s.get('ATADOS_URL')+'/v1/create/project/', data)
+      req.add_header('Authorization', 'Bearer '+token.get('access_token', None))
+      req.add_header('Content-Type', 'application/json; charset=UTF-8')
+      resp = request.urlopen(req)
+      content = resp.read()
+
+    return self
+
 
   def generate_slug(self):
     if self.name:

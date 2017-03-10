@@ -13,7 +13,6 @@ from rest_framework import permissions
 from rest_framework import response
 from rest_framework import status
 
-
 class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """
   ProjectResourceViewSet resource endpoint
