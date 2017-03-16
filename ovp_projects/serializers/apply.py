@@ -25,7 +25,7 @@ class ApplyRetrieveSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Apply
-    fields = ['id', 'email', 'date', 'canceled', 'canceled_date', 'status', 'user']
+    fields = ['id', 'email', 'username', 'phone', 'date', 'canceled', 'canceled_date', 'status', 'user']
 
   def get_status(self, object):
     return object.get_status_display()
