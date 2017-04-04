@@ -69,7 +69,7 @@ class Project(models.Model):
     return self.owner.email
 
   def get_volunteers_numbers(self):
-    return Apply.objects.filter(project=self, canceled=False).count
+    return Apply.objects.filter(project=self, canceled=False).count()
 
   '''
   Model operation methods
