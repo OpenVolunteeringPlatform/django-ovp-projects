@@ -1,5 +1,6 @@
 from ovp_core.emails import BaseMail
 from django.utils.translation import ugettext_lazy as _
+from ovp_core.helpers import get_settings
 
 class ProjectMail(BaseMail):
   """
@@ -70,3 +71,21 @@ class ApplyMail(BaseMail):
     """
     super(ApplyMail, self).__init__(self.apply.project.owner.email, self.async, self.apply.project.owner.locale)
     return self.sendEmail('volunteerUnapplied-ToOwner', 'Volunteer unapplied from project', context)
+
+
+
+class ProjectAdminMail(BaseMail):
+  """
+  This class is responsible for firing emails for Project related actions
+  """
+  def __init__(self, project, async_mail=None):
+    s = get_settings()
+    email = s.get('ADMIN_MAIL', None)
+    super(ProjectAdminMail, self).__init__(email, async_mail)
+
+
+  def sendProjectCreated(self, context={}):
+    """
+    Sent when user creates a project
+    """
+    return self.sendEmail('projectCreatedToAdmin', 'Project created', context)
