@@ -214,5 +214,11 @@ v1.2.7
 -----------
 * Upgrade ovp-core requirement
 
-v1.2.8[unreleased]
+v1.2.8
+-----------
+* Add crowfunding field to Project model
+* Add username, email and phone to Apply serializer
+* Add ApplyUserRetrieveSerializer
+
+v1.2.9[unreleased]
 -----------

@@ -1,10 +1,7 @@
 from ovp_projects import models
 from rest_framework import serializers
 
-from ovp_projects.serializers.disponibility import DisponibilitySerializer, add_disponibility_representation
-from ovp_projects.serializers.job import JobSerializer
-from ovp_projects.serializers.work import WorkSerializer
-from ovp_core.serializers import GoogleAddressSerializer, GoogleAddressLatLngSerializer, GoogleAddressCityStateSerializer
+from ovp_core.serializers import GoogleAddressLatLngSerializer
 from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 
@@ -22,6 +19,7 @@ class ProjectApplyRetrieveSerializer(serializers.ModelSerializer):
 
 class ApplyUserRetrieveSerializer(serializers.ModelSerializer):
 	project = ProjectApplyRetrieveSerializer()
+
 	class Meta:
 		model = models.Apply
 		fields = ['id', 'email', 'username', 'phone', 'date', 'canceled', 'canceled_date', 'project']
