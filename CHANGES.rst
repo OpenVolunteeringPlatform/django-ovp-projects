@@ -219,8 +219,8 @@ v1.2.8
 * Add crowfunding field to Project model
 * Add username, email and phone to Apply serializer
 * Add ApplyUserRetrieveSerializer
-* Add Admin Email
 
 v1.2.9[unreleased]
 -----------
 * Upgrade ovp-users
+* Add Admin Email
