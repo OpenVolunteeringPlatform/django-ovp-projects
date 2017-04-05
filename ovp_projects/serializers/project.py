@@ -15,7 +15,7 @@ from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 from ovp_organizations.models import Organization
 
-from ovp_users.serializers import UserPublicRetrieveSerializer, UserProjectRetrieveSerializer
+from ovp_users.serializers import ShortUserPublicRetrieveSerializer, UserProjectRetrieveSerializer
 
 from rest_framework import serializers
 from rest_framework import exceptions
@@ -169,7 +169,7 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
   address = GoogleAddressLatLngSerializer()
   organization = CompactOrganizationSerializer()
-  owner = UserPublicRetrieveSerializer()
+  owner = ShortUserPublicRetrieveSerializer()
 
   class Meta:
     model = models.Project
