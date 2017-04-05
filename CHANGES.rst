@@ -220,7 +220,10 @@ v1.2.8
 * Add username, email and phone to Apply serializer
 * Add ApplyUserRetrieveSerializer
 
-v1.2.9[unreleased]
+v1.2.9
 -----------
 * Upgrade ovp-users
 * Add Admin Email
+
+v1.2.10[unreleased]
+-----------
