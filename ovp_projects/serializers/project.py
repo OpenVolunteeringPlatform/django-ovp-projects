@@ -9,6 +9,8 @@ from ovp_projects.serializers.apply import ProjectAppliesSerializer
 
 from ovp_core import models as core_models
 from ovp_core.serializers import GoogleAddressSerializer, GoogleAddressLatLngSerializer, GoogleAddressCityStateSerializer
+from ovp_core.serializers.cause import CauseSerializer, CauseAssociationSerializer
+from ovp_core.serializers.skill import SkillSerializer, SkillAssociationSerializer
 
 from ovp_uploads.serializers import UploadedImageSerializer
 
@@ -39,13 +41,18 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
   address = GoogleAddressSerializer()
   disponibility = DisponibilitySerializer()
   roles = VolunteerRoleSerializer(many=True, required=False)
+  causes = CauseAssociationSerializer(many=True, required=False)
+  skills = SkillAssociationSerializer(many=True, required=False)
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles', 'max_applies', 'minimum_age', 'hidden_address', 'crowdfunding', 'public_project']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles', 'max_applies', 'minimum_age', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills']
     read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
+    causes = validated_data.pop('causes', [])
+    skills = validated_data.pop('skills', [])
+
     # Address
     address_data = validated_data.pop('address', {})
     address_sr = GoogleAddressSerializer(data=address_data)
@@ -79,10 +86,22 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
       job_sr = JobSerializer(data=job_data)
       job = job_sr.create(job_data)
 
+    # Associate causes
+    for cause in causes:
+      c = core_models.Cause.objects.get(pk=cause['id'])
+      project.causes.add(c)
+
+    # Associate skills
+    for skill in skills:
+      s = core_models.Skill.objects.get(pk=skill['id'])
+      project.skills.add(s)
+
     return project
 
 
   def update(self, instance, validated_data):
+    causes = validated_data.pop('causes', [])
+    skills = validated_data.pop('skills', [])
     address_data = validated_data.pop('address', None)
     roles = validated_data.pop('roles', None)
     disp = validated_data.pop('disponibility', None)
@@ -126,6 +145,20 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
         job_sr = JobSerializer(data=job_data)
         job = job_sr.create(job_data)
 
+    # Associate causes
+    if causes:
+      instance.causes.clear()
+      for cause in causes:
+        c = core_models.Cause.objects.get(pk=cause['id'])
+        instance.causes.add(c)
+
+    # Associate skills
+    if skills:
+      instance.skills.clear()
+      for skill in skills:
+        s = core_models.Skill.objects.get(pk=skill['id'])
+        instance.skills.add(s)
+
     instance.save()
 
     return instance
@@ -146,10 +179,12 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   roles = VolunteerRoleSerializer(many=True)
   owner = UserProjectRetrieveSerializer()
   applies = ProjectAppliesSerializer(many=True, source="active_apply_set")
+  causes = CauseSerializer(many=True)
+  skills = SkillSerializer(many=True)
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'minimum_age', 'applies', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'minimum_age', 'applies', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills']
 
   @hide_address
   @add_disponibility_representation

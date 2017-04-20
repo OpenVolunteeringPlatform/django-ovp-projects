@@ -13,7 +13,7 @@ from collections import OrderedDict
 import copy
 
 
-base_project = {"name": "test project", "slug": "test-cant-override-slug-on-creation", "details": "this is just a test project", "description": "the project is being tested", "minimum_age": 18, "address": {"typed_address": "r. tecainda, 81, sao paulo"}, "disponibility": {"type": "work", "work": {"description": "abc"}}}
+base_project = {"name": "test project", "slug": "test-cant-override-slug-on-creation", "details": "this is just a test project", "description": "the project is being tested", "minimum_age": 18, "address": {"typed_address": "r. tecainda, 81, sao paulo"}, "disponibility": {"type": "work", "work": {"description": "abc"}}, "causes": [{"id": 1}, {"id": 2}], "skills": [{"id": 3}, {"id": 4}]}
 
 @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": True})
 class ProjectResourceViewSetTestCase(TestCase):
@@ -43,6 +43,8 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(response.data["details"] == data["details"])
     self.assertTrue(response.data["description"] == data["description"])
     self.assertTrue(response.data["minimum_age"] == data["minimum_age"])
+    self.assertTrue(len(response.data["causes"]) == 2)
+    self.assertTrue(len(response.data["skills"]) == 2)
 
     project = Project.objects.get(pk=response.data["id"])
     self.assertTrue(project.owner.id == user.id)
@@ -84,6 +86,8 @@ class ProjectResourceViewSetTestCase(TestCase):
     self.assertTrue(type(response.data["applies"]) is list)
     self.assertTrue(type(response.data["applied_count"]) is int)
     self.assertTrue(type(response.data["max_applies_from_roles"]) is int)
+    self.assertTrue(len(response.data["causes"]) == 2)
+    self.assertTrue(len(response.data["skills"]) == 2)
 
 
 
@@ -265,12 +269,14 @@ class ProjectResourceUpdateTestCase(TestCase):
 
   def test_update_fields(self):
     """Test patch request update fields"""
-    updated_project = {"name": "test update", "details": "update", "description": "update"}
+    updated_project = {"name": "test update", "details": "update", "description": "update", "causes": [{"id": 3}], "skills": [{"id": 1}, {"id": 2}, {"id": 3}]}
     response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
     self.assertTrue(response.status_code == 200)
     self.assertTrue(response.data["name"] == "test update")
     self.assertTrue(response.data["details"] == "update")
     self.assertTrue(response.data["description"] == "update")
+    self.assertTrue(len(response.data["causes"]) == 1)
+    self.assertTrue(len(response.data["skills"]) == 3)
 
     user = User.objects.create_user(email="another@user.com", password="testcancreate")
     organization = Organization(name="test", type=0, owner=self.user)
