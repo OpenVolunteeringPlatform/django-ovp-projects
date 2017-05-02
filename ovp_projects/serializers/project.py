@@ -192,6 +192,23 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
     return super(ProjectRetrieveSerializer, self).to_representation(instance)
 
 
+class ProjectOnOrganizationRetrieveSerializer(serializers.ModelSerializer):
+  image = UploadedImageSerializer()
+  address = GoogleAddressLatLngSerializer()
+  disponibility = DisponibilitySerializer()
+  causes = CauseSerializer(many=True)
+  skills = SkillSerializer(many=True)
+
+  class Meta:
+    model = models.Project
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'disponibility', 'minimum_age', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills']
+
+  @hide_address
+  @add_disponibility_representation
+  def to_representation(self, instance):
+    return super(ProjectOnOrganizationRetrieveSerializer, self).to_representation(instance)
+
+
 class CompactOrganizationSerializer(serializers.ModelSerializer):
   address = GoogleAddressCityStateSerializer()
 
