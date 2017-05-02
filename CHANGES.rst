@@ -225,7 +225,10 @@ v1.2.9
 * Upgrade ovp-users
 * Add Admin Email
 
-v1.2.10[unreleased]
+v1.2.10
 -----------
 * Add causes and skills to project serializers
 * Add ProjectOnOrganizationRetrieveSerializer
+
+v1.2.11[unreleased]
+-----------
