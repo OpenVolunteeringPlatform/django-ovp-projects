@@ -229,6 +229,7 @@ v1.2.10
 -----------
 * Add causes and skills to project serializers
 * Add ProjectOnOrganizationRetrieveSerializer
+* Add disponibility on ProjectSearchSerializer
 
 v1.2.11[unreleased]
 -----------

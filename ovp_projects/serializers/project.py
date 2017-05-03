@@ -222,12 +222,14 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
   address = GoogleAddressLatLngSerializer()
   organization = CompactOrganizationSerializer()
   owner = ShortUserPublicRetrieveSerializer()
+  disponibility = DisponibilitySerializer()
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'organization', 'owner', 'applied_count', 'max_applies', 'hidden_address']
+    fields = ['slug', 'image', 'name', 'description', 'disponibility', 'highlighted', 'published_date', 'address', 'organization', 'owner', 'applied_count', 'max_applies', 'hidden_address']
 
   @hide_address
+  @add_disponibility_representation
   def to_representation(self, instance):
     return super(ProjectSearchSerializer, self).to_representation(instance)
 
