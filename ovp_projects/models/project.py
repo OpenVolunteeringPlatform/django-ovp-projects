@@ -61,6 +61,7 @@ class Project(models.Model):
 
   def admin_mailing(self, async_mail=None):
     return emails.ProjectAdminMail(self, async_mail)
+
   '''
   Data methods
   '''

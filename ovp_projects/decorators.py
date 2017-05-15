@@ -1,5 +1,6 @@
 from functools import wraps
 from ovp_organizations.models import Organization
+from ovp_projects import models
 
 def hide_address(func):
   """ Used to decorate Serializer.to_representation method.
@@ -34,6 +35,27 @@ def hide_address(func):
         ret["address"] = None
     else:
       ret = func(self, instance)
+
+    return ret
+  return _impl
+
+
+def current_user_is_applied(func):
+  """ Used to decorate Serializer.to_representation method.
+      It hides the address field if the Project has 'hidden_address' == True
+      and the request user is neither owner or member of the organization """
+  @wraps(func)
+  def _impl(self, instance):
+    # We pop address field to avoid AttributeError on default Serializer.to_representation
+    request = self.context["request"]
+    applied = False
+    try:
+      applied = models.Apply.objects.filter(user=request.user).count() > 0
+    except:
+      None
+    
+    ret = func(self, instance)
+    ret['current_user_is_applied'] = applied
 
     return ret
   return _impl
