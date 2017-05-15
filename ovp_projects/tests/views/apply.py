@@ -22,6 +22,9 @@ class ApplyAndUnapplyTestCase(TestCase):
     client = APIClient()
     client.force_authenticate(user=user)
 
+    response = client.get(reverse("project-detail", ["test-project"]), format="json")
+    self.assertTrue(response.data["current_user_is_applied"] == False)
+
     response = client.post(reverse("project-applies-apply", ["test-project"]), format="json")
     self.assertTrue(response.data["detail"] == "Successfully applied.")
     self.assertTrue(response.status_code == 200)
@@ -31,6 +34,7 @@ class ApplyAndUnapplyTestCase(TestCase):
 
     response = client.get(reverse("project-detail", ["test-project"]), format="json")
     self.assertTrue(type(response.data["applies"][0]["user"]) in [dict, OrderedDict])
+    self.assertTrue(response.data["current_user_is_applied"] == True)
 
 
   def test_can_reapply_to_project(self):

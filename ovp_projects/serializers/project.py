@@ -1,6 +1,6 @@
 from ovp_projects import models
 from ovp_projects import helpers
-from ovp_projects.decorators import hide_address, current_user_is_applied
+from ovp_projects.decorators import hide_address, add_current_user_is_applied_representation
 from ovp_projects.serializers.disponibility import DisponibilitySerializer, add_disponibility_representation
 from ovp_projects.serializers.job import JobSerializer
 from ovp_projects.serializers.work import WorkSerializer
@@ -170,7 +170,6 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
   def to_representation(self, instance):
     return super(ProjectCreateUpdateSerializer, self).to_representation(instance)
 
-
 class ProjectRetrieveSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
   address = GoogleAddressLatLngSerializer()
@@ -181,15 +180,14 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   applies = ProjectAppliesSerializer(many=True, source="active_apply_set")
   causes = CauseSerializer(many=True)
   skills = SkillSerializer(many=True)
-  current_user_is_applied = serializers.BooleanField()
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'minimum_age', 'applies', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills', 'current_user_is_applied']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'organization', 'disponibility', 'roles', 'owner', 'minimum_age', 'applies', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills']
 
+  @add_current_user_is_applied_representation
   @hide_address
   @add_disponibility_representation
-  @current_user_is_applied
   def to_representation(self, instance):
     return super(ProjectRetrieveSerializer, self).to_representation(instance)
 

@@ -40,22 +40,24 @@ def hide_address(func):
   return _impl
 
 
-def current_user_is_applied(func):
+def add_current_user_is_applied_representation(func):
   """ Used to decorate Serializer.to_representation method.
-      It hides the address field if the Project has 'hidden_address' == True
-      and the request user is neither owner or member of the organization """
+      It sets the field "current_user_is_applied" if the user is applied to the project
+  """
   @wraps(func)
   def _impl(self, instance):
-    # We pop address field to avoid AttributeError on default Serializer.to_representation
-    request = self.context["request"]
-    applied = False
-    try:
-      applied = models.Apply.objects.filter(user=request.user).count() > 0
-    except:
-      None
-    
+    # We pop current_user_is_applied field to avoid AttributeError on default Serializer.to_representation
     ret = func(self, instance)
-    ret['current_user_is_applied'] = applied
+
+    user = self.context["request"].user
+    applied = False
+    if not user.is_anonymous():
+      try:
+        applied = models.Apply.objects.filter(user=user, project=instance).count() > 0
+      except:
+        pass
+
+    ret["current_user_is_applied"] = applied
 
     return ret
   return _impl
