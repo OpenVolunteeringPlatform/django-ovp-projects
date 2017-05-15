@@ -95,5 +95,7 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
       return serializers.ProjectRetrieveSerializer
     if self.action == 'close':
       return serializers.ProjectRetrieveSerializer
+    if self.action == 'retrieve':
+      return serializers.ProjectRetrieveSerializer
 
     return serializers.ProjectRetrieveSerializer

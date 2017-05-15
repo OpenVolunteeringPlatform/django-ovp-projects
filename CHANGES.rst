@@ -233,3 +233,4 @@ v1.2.10
 
 v1.2.11[unreleased]
 -----------
+* Add 'current_user_is_applied' to project retrieval
