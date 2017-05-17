@@ -6,12 +6,21 @@ from ovp_projects import helpers
 from ovp_projects.permissions import ProjectCreateOwnsOrIsOrganizationMember
 from ovp_projects.permissions import ProjectRetrieveOwnsOrIsOrganizationMember
 
+from ovp_core.helpers.xls import Response as XLSResponse
+
 from rest_framework import decorators
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import response
 from rest_framework import status
+
+from django.utils.translation import ugettext as _
+
+
+EXPORT_APPLIED_USERS_HEADERS = [
+  _('User Name'), _('User Email'), _('User Phone'), _('Applied At'), _('Status')
+  ]
 
 class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """
@@ -54,6 +63,22 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     project.save()
     serializer = self.get_serializer_class()(project, context=self.get_serializer_context())
     return response.Response(serializer.data)
+
+  @decorators.detail_route(['GET'])
+  def export_applied_users(self, request, *args, **kwargs):
+    project = self.get_object()
+
+    applied_users = [EXPORT_APPLIED_USERS_HEADERS]
+    for apply in project.apply_set.all():
+      user = apply.user
+      applied_users.append([
+        apply.username, apply.email, apply.phone,
+        apply.date.strftime('%d/%m/%Y %T'), apply.status,
+        ])
+
+    filename = '{}-applied-users.xls'.format(project.slug)
+    print('filename', filename, _('Applied Users'))
+    return XLSResponse(applied_users, filename, _('Applied Users'))
 
   @decorators.list_route(['GET'])
   def manageable(self, request, *args, **kwargs):
