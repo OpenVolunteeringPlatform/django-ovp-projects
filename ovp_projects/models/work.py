@@ -9,7 +9,7 @@ class Work(models.Model):
   can_be_done_remotely = models.BooleanField(_('This job can be done remotely'), default=False)
 
   def __str__(self):
-    return _('%s hours per week') % (self.weekly_hours)
+    return _('%d hours per week') % (self.weekly_hours)
 
   class Meta:
     app_label = 'ovp_projects'
