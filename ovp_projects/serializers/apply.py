@@ -21,7 +21,7 @@ class ApplyUpdateSerializer(serializers.ModelSerializer):
 
 class ApplyRetrieveSerializer(serializers.ModelSerializer):
   user = UserApplyRetrieveSerializer()
-  status = serializers.SerializerMethodField()
+  status = serializers.CharField()
 
   class Meta:
     model = models.Apply
