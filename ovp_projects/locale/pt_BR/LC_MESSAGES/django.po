@@ -132,11 +132,11 @@ msgstr "telefone"
 
 #: django-ovp-projects/ovp_projects/models/apply.py:75
 msgid "apply"
-msgstr "cadastro"
+msgstr "inscrição"
 
 #: django-ovp-projects/ovp_projects/models/apply.py:76
 msgid "applies"
-msgstr "cadastros"
+msgstr "inscrições"
 
 #: django-ovp-projects/ovp_projects/models/job.py:5
 msgid "Label"
@@ -216,7 +216,7 @@ msgstr "Em destaque"
 
 #: django-ovp-projects/ovp_projects/models/project.py:38
 msgid "Applied count"
-msgstr "Cadastros"
+msgstr "inscrições"
 
 #: django-ovp-projects/ovp_projects/models/project.py:41
 msgid "Public"
