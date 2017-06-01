@@ -57,7 +57,7 @@ msgstr "Endereço"
 #: django-ovp-projects/ovp_projects/admin/job.py:14
 #: django-ovp-projects/ovp_projects/admin/job.py:15
 msgid "Job"
-msgstr "Vaga"
+msgstr "Ação Pontual"
 
 #: django-ovp-projects/ovp_projects/admin/job.py:22
 msgid "edit"
@@ -155,7 +155,7 @@ msgstr "Data de finalização"
 #: django-ovp-projects/ovp_projects/models/job.py:8
 #: django-ovp-projects/ovp_projects/models/job.py:42
 msgid "job"
-msgstr "ação"
+msgstr "ação pontual"
 
 #: django-ovp-projects/ovp_projects/models/job.py:17
 msgid "job date"
@@ -163,7 +163,7 @@ msgstr "data da ação"
 
 #: django-ovp-projects/ovp_projects/models/job.py:18
 msgid "job dates"
-msgstr "datas da ação"
+msgstr "datas de ações"
 
 #: django-ovp-projects/ovp_projects/models/job.py:25
 #: django-ovp-projects/ovp_projects/models/work.py:9
@@ -176,7 +176,7 @@ msgstr "Ação sem projeo"
 
 #: django-ovp-projects/ovp_projects/models/job.py:43
 msgid "jobs"
-msgstr "ações"
+msgstr "ações pontuais"
 
 #: django-ovp-projects/ovp_projects/models/project.py:24
 msgid "image"
@@ -310,11 +310,11 @@ msgstr "%d horas por semana"
 
 #: django-ovp-projects/ovp_projects/models/work.py:16
 msgid "work"
-msgstr ""
+msgstr "ação recorrente"
 
 #: django-ovp-projects/ovp_projects/models/work.py:17
 msgid "works"
-msgstr ""
+msgstr "ações recorrentes"
 
 #: django-ovp-projects/ovp_projects/views/project.py:22
 msgid "User Name"
