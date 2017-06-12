@@ -9,7 +9,7 @@ from ovp_projects.serializers.apply import ProjectAppliesSerializer
 
 from ovp_core import models as core_models
 from ovp_core.serializers import GoogleAddressSerializer, GoogleAddressLatLngSerializer, GoogleAddressCityStateSerializer
-from ovp_core.serializers.cause import CauseSerializer, CauseAssociationSerializer
+from ovp_core.serializers.cause import CauseSerializer, CauseAssociationSerializer, FullCauseSerializer
 from ovp_core.serializers.skill import SkillSerializer, SkillAssociationSerializer
 
 from ovp_uploads.serializers import UploadedImageSerializer
@@ -178,7 +178,7 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   roles = VolunteerRoleSerializer(many=True)
   owner = UserProjectRetrieveSerializer()
   applies = ProjectAppliesSerializer(many=True, source="active_apply_set")
-  causes = CauseSerializer(many=True)
+  causes = FullCauseSerializer(many=True)
   skills = SkillSerializer(many=True)
 
   class Meta:
