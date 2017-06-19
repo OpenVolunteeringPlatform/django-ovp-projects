@@ -236,3 +236,4 @@ v1.2.11[unreleased]
 * Add 'current_user_is_applied' to project retrieval
 * Add pt_BR translations
 * Add 'export_applied_users' route to export applied users info
+* Add Organization and Owner in ProjectOnOrganizationRetrieveSerializer
