@@ -229,7 +229,7 @@ class ProjectApplyStatusUpdateTestCase(TestCase):
 
     # Get apply
     response = self.client.get(reverse("project-applies-list", ["test-project"]), format="json")
-    self.assertTrue(response.data[0]["status"] == "Canceled")
+    self.assertTrue(response.data[0]["status"] == "unapplied")
 
   def test_project_owner_can_update_apply_status(self):
     """Assert that project owner can update apply status"""
