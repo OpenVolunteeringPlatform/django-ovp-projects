@@ -191,6 +191,12 @@ class ProjectRetrieveSerializer(serializers.ModelSerializer):
   def to_representation(self, instance):
     return super(ProjectRetrieveSerializer, self).to_representation(instance)
 
+class CompactOrganizationSerializer(serializers.ModelSerializer):
+  address = GoogleAddressCityStateSerializer()
+
+  class Meta:
+    model = Organization
+    fields = ['name', 'address']
 
 class ProjectOnOrganizationRetrieveSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
@@ -198,23 +204,17 @@ class ProjectOnOrganizationRetrieveSerializer(serializers.ModelSerializer):
   disponibility = DisponibilitySerializer()
   causes = CauseSerializer(many=True)
   skills = SkillSerializer(many=True)
+  owner = UserProjectRetrieveSerializer()
+  organization = CompactOrganizationSerializer()
 
   class Meta:
     model = models.Project
-    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'disponibility', 'minimum_age', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills']
+    fields = ['slug', 'image', 'name', 'description', 'highlighted', 'published_date', 'address', 'details', 'created_date', 'disponibility', 'minimum_age', 'applied_count', 'max_applies', 'max_applies_from_roles', 'closed', 'closed_date', 'published', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills', 'owner', 'organization']
 
   @hide_address
   @add_disponibility_representation
   def to_representation(self, instance):
     return super(ProjectOnOrganizationRetrieveSerializer, self).to_representation(instance)
-
-
-class CompactOrganizationSerializer(serializers.ModelSerializer):
-  address = GoogleAddressCityStateSerializer()
-
-  class Meta:
-    model = Organization
-    fields = ['name', 'address']
 
 
 class ProjectSearchSerializer(serializers.ModelSerializer):
