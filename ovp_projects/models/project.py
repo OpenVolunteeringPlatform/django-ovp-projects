@@ -5,7 +5,7 @@ from django.template.defaultfilters import slugify
 from django.db.models import Sum
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from ovp_core.helpers import get_settings, get_address_model
+from ovp_core.helpers import get_address_model
 
 from ovp_projects import emails
 from ovp_projects.models.apply import Apply
