@@ -27,7 +27,6 @@ setup(
       'ovp-core>=1.2.6,<2.0.0',
       'ovp-uploads>=1.0.0,<2.0.0',
       'ovp-organizations>=1.0.0,<2.0.0',
-      'pyexcel-xls>=0.3.1,<1.0.0'
     ],
     dependency_links = [
       'git+https://github.com/alanjds/drf-nested-routers.git@0438289'
