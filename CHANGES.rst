@@ -239,5 +239,9 @@ v1.2.11
 * Add Organization and Owner in ProjectOnOrganizationRetrieveSerializer
 * Use dynamic address on projects
 
-v1.2.12[unreleased]
+v1.2.12
+-----------
+* Fix dependencies
+
+v1.2.13[unreleased]
 -----------
