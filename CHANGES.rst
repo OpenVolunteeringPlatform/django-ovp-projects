@@ -231,10 +231,13 @@ v1.2.10
 * Add ProjectOnOrganizationRetrieveSerializer
 * Add disponibility on ProjectSearchSerializer
 
-v1.2.11[unreleased]
+v1.2.11
 -----------
 * Add 'current_user_is_applied' to project retrieval
 * Add pt_BR translations
 * Add 'export_applied_users' route to export applied users info
 * Add Organization and Owner in ProjectOnOrganizationRetrieveSerializer
 * Use dynamic address on projects
+
+v1.2.12[unreleased]
+-----------
