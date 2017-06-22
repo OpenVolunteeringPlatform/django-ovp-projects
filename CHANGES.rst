@@ -237,3 +237,4 @@ v1.2.11[unreleased]
 * Add pt_BR translations
 * Add 'export_applied_users' route to export applied users info
 * Add Organization and Owner in ProjectOnOrganizationRetrieveSerializer
+* Use dynamic address on projects

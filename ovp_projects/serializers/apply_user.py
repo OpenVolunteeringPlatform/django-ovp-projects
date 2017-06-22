@@ -1,13 +1,17 @@
 from ovp_projects import models
 from rest_framework import serializers
 
-from ovp_core.serializers import GoogleAddressLatLngSerializer
+from ovp_core.helpers import get_address_serializers
 from ovp_uploads.serializers import UploadedImageSerializer
 from ovp_organizations.serializers import OrganizationSearchSerializer
 
+""" Address serializers """
+address_serializers = get_address_serializers()
+
+""" Serializers """
 class ProjectApplyRetrieveSerializer(serializers.ModelSerializer):
   image = UploadedImageSerializer()
-  address = GoogleAddressLatLngSerializer()
+  address = address_serializers[1]()
   organization = OrganizationSearchSerializer()
 
   class Meta:

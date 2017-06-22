@@ -117,6 +117,61 @@ class ProjectCloseTestCase(TestCase):
     self.assertTrue(response.data["closed"])
 
 
+# This tests should run if declaring the following setings on runtests.py
+# They can't work without rerunning migrations as django expects the default GoogleAddress related model
+#
+#@override_settings(OVP_CORE={"ADDRESS_MODEL": "ovp_core.models.SimpleAddress", "ADDRESS_SERIALIZER_TUPLE": ("ovp_core.serializers.SimpleAddressSerializer", "ovp_core.serializers.SimpleAddressSerializer", "ovp_core.serializers.SimpleAddressSerializer")})
+#class ProjectWithSimpleAddressTestCase(TestCase):
+#  def setUp(self):
+#    self.user = User.objects.create_user(email="test_can_create_project@gmail.com", password="testcancreate")
+#    self.client = APIClient()
+#    self.client.force_authenticate(user=self.user)
+#
+#    self.data = copy.copy(base_project)
+#    self.data["address"] = {
+#      "street": "Av. Paulista",
+#      "number": "1000",
+#      "neighbourhood": "Bela Vista",
+#      "city": "São Paulo",
+#      "state": "São Paulo",
+#      "country": "Brazil",
+#      "zipcode": "01310-100",
+#      "supplement": "Casa B"
+#    }
+#
+#
+#  def test_can_create_project(self):
+#    """Assert that it's possible to create a project with simple address"""
+#    import pudb;pudb.set_trace()
+#    p = Project()
+#
+#    response = self.client.post(reverse("project-list"), self.data, format="json")
+#    self.assertTrue(response.status_code == 201)
+#    self.assertTrue(response.data["id"])
+#    self.assertTrue(response.data["address"]["street"] == self.data["address"]["street"])
+#    self.assertTrue(response.data["address"]["number"] == self.data["address"]["number"])
+#    self.assertTrue(response.data["address"]["neighbourhood"] == self.data["address"]["neighbourhood"])
+#    self.assertTrue(response.data["address"]["city"] == self.data["address"]["city"])
+#    self.assertTrue(response.data["address"]["state"] == self.data["address"]["state"])
+#    self.assertTrue(response.data["address"]["country"] == self.data["address"]["country"])
+#    self.assertTrue(response.data["address"]["zipcode"] == self.data["address"]["zipcode"])
+#    self.assertTrue(response.data["address"]["supplement"] == self.data["address"]["supplement"])
+#
+#  def test_project_retrieval(self):
+#    """Assert projects can be retrieved with simple address"""
+#
+#    response = self.client.post(reverse("project-list"), self.data, format="json")
+#    response = self.client.get(reverse("project-detail", ["test-project"]), format="json")
+#
+#    self.assertTrue(response.data["address"]["street"] == self.data["address"]["street"])
+#    self.assertTrue(response.data["address"]["number"] == self.data["address"]["number"])
+#    self.assertTrue(response.data["address"]["neighbourhood"] == self.data["address"]["neighbourhood"])
+#    self.assertTrue(response.data["address"]["city"] == self.data["address"]["city"])
+#    self.assertTrue(response.data["address"]["state"] == self.data["address"]["state"])
+#    self.assertTrue(response.data["address"]["country"] == self.data["address"]["country"])
+#    self.assertTrue(response.data["address"]["zipcode"] == self.data["address"]["zipcode"])
+#    self.assertTrue(response.data["address"]["supplement"] == self.data["address"]["supplement"])
+
 @override_settings(OVP_PROJECTS={"CAN_CREATE_PROJECTS_WITHOUT_ORGANIZATION": False})
 class ProjectWithOrganizationTestCase(TestCase):
   def setUp(self):
