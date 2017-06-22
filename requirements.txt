@@ -9,4 +9,5 @@ ovp-users==1.1.6
 ovp-uploads==1.0.2
 ovp-organizations==1.0.8
 djangorestframework-csv==2.0.0
+pyexcel-xls==0.3.1
 git+https://github.com/alanjds/drf-nested-routers.git@0438289

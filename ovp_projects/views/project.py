@@ -77,7 +77,6 @@ class ProjectResourceViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
         ])
 
     filename = '{}-applied-users.xls'.format(project.slug)
-    print('filename', filename, _('Applied Users'))
     return XLSResponse(applied_users, filename, _('Applied Users'))
 
   @decorators.list_route(['GET'])
