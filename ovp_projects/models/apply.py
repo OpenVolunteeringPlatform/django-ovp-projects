@@ -14,6 +14,7 @@ apply_status_choices = (
 class Apply(models.Model):
   user = models.ForeignKey('ovp_users.User', blank=True, null=True, verbose_name=_('user'))
   project = models.ForeignKey('ovp_projects.Project', verbose_name=_('project'))
+  role = models.ForeignKey('ovp_projects.VolunteerRole', verbose_name=_('role'), blank=False, null=True)
   status = models.CharField(_('status'), max_length=30, choices=apply_status_choices, default="applied")
   date = models.DateTimeField(_('created date'), auto_now_add=True, blank=True)
   canceled = models.BooleanField(_("canceled"), default=False)
