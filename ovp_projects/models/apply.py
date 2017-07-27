@@ -64,6 +64,14 @@ class Apply(models.Model):
     self.__original_canceled = self.canceled
     return_data = super(Apply, self).save(*args, **kwargs)
 
+    if self.role:
+      if self.status == 'applied' or self.status == 'confirmed-volunteer':
+        self.role.applied_count = self.role.applied_count + 1
+        self.role.save()
+      else:
+        self.role.applied_count = self.role.applied_count - 1
+        self.role.save()
+
     # Updating project applied_count
     self.project.applied_count = self.project.get_volunteers_numbers()
     self.project.save()

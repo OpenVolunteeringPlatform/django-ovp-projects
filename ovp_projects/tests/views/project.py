@@ -371,7 +371,7 @@ class ProjectResourceUpdateTestCase(TestCase):
 
   def test_update_roles(self):
     """Test patch request update roles resource"""
-    updated_project = {"roles": [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5}]}
+    updated_project = {"roles": [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5, "applied_count": 0}]}
     response = self.client.patch(reverse("project-detail", ["test-project"]), updated_project, format="json")
 
     self.assertTrue(response.status_code == 200)
@@ -498,7 +498,7 @@ class VolunteerRoleTestCase(TestCase):
 
   def test_roles_get_saved(self):
     """Test roles get saved"""
-    self.data["roles"] = [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5}]
+    self.data["roles"] = [{"name": "test", "prerequisites": "test2", "details": "test3", "vacancies": 5, "applied_count": 0}]
     response = self.client.post(reverse("project-list"), self.data, format="json")
     self.assertTrue(response.status_code == 201)
     self.assertTrue(response.data["roles"] == self.data["roles"])

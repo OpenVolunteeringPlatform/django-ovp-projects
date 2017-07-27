@@ -2,7 +2,7 @@ from ovp_projects import models
 from ovp_projects.models.apply import apply_status_choices
 
 from ovp_users.serializers import ShortUserPublicRetrieveSerializer, UserApplyRetrieveSerializer
-from ovp_projects import serializers as s
+from ovp_projects.serializers import role
 
 from rest_framework import serializers
 
@@ -34,7 +34,7 @@ class ApplyRetrieveSerializer(serializers.ModelSerializer):
 
 class ProjectAppliesSerializer(serializers.ModelSerializer):
   user = ShortUserPublicRetrieveSerializer()
-  role = s.role.VolunteerRoleRetrieveSerializer()
+  role = role.VolunteerRoleApplySerializer()
   
   class Meta:
     model = models.Apply
