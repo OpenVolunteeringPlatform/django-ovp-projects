@@ -24,6 +24,20 @@ class Job(models.Model):
   end_date = models.DateTimeField(_('End date'), blank=True, null=True)
   can_be_done_remotely = models.BooleanField(_('This job can be done remotely'), default=False)
 
+  def save(self, *args, **kwargs):
+    return_data = super(Job, self).save(*args, **kwargs)
+    try:
+      if self.start_date:
+        job_date = JobDate.objects.get(job=self)
+        job_date.start_date = self.start_date
+        job_date.end_date = self.end_date
+        job_date.save()
+    except:
+      job_date = JobDate(start_date=self.start_date, end_date=self.end_date, job=self)
+      job_date.save()
+    
+    return return_data
+
   def __str__(self):
     name = self.project and self.project.name or _('Unbound Job')
     start_date = self.start_date and self.start_date.strftime("%d/%m/%Y") or ''
