@@ -49,7 +49,7 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Project
-    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles', 'max_applies', 'minimum_age', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills']
+    fields = ['id', 'image', 'name', 'slug', 'owner', 'details', 'description', 'highlighted', 'published', 'published_date', 'created_date', 'address', 'organization', 'disponibility', 'roles', 'max_applies', 'minimum_age', 'hidden_address', 'crowdfunding', 'public_project', 'causes', 'skills', 'mode']
     read_only_fields = ['slug', 'highlighted', 'published', 'published_date', 'created_date']
 
   def create(self, validated_data):
