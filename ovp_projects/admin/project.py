@@ -55,7 +55,7 @@ class ProjectAdmin(admin.ModelAdmin, CountryFilterMixin):
   ]
 
   readonly_fields = [
-    'id', 'created_date', 'modified_date', 'published_date', 'closed_date', 'deleted_date', 'applied_count', 'max_applies_from_roles',
+    'id', 'created_date', 'modified_date', 'published_date', 'closed_date', 'deleted_date', 'applied_count',
     'owner__name', 'owner__email', 'owner__phone',
     'can_be_done_remotely'
   ]
