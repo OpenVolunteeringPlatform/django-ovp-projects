@@ -20,7 +20,7 @@ class ProjectAdmin(admin.ModelAdmin, CountryFilterMixin):
 
     ('owner__name', 'owner__email', 'owner__phone'),
 
-    ('applied_count', 'max_applies_from_roles'),
+    ('applied_count', 'max_applies'),
 
     ('can_be_done_remotely'),
 
