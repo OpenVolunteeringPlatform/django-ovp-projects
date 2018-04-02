@@ -30,6 +30,7 @@ class Project(models.Model):
 
   # Fields
   name = models.CharField(_('Project name'), max_length=100)
+  handson_id = models.CharField(_('HandsOn id'), max_length=100, blank=True, null=True)
   slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
   published = models.BooleanField(_("Published"), default=False)
   highlighted = models.BooleanField(_("Highlighted"), default=False, blank=False)
@@ -145,7 +146,7 @@ class VolunteerRole(models.Model):
   """
   Volunteer role model
   """
-  name = models.CharField(_('Role name'), max_length=50, blank=True, null=True, default=None)
+  name = models.CharField(_('Role name'), max_length=100, blank=True, null=True, default=None)
   prerequisites = models.TextField(_('Prerequisites'), max_length=1024, blank=True, null=True, default=None)
   details = models.TextField(_('Details'), max_length=1024, blank=True, null=True, default=None)
   vacancies = models.PositiveSmallIntegerField(_('Vacancies'), blank=True, null=True, default=None)
