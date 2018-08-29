@@ -37,7 +37,7 @@ class ProjectAdmin(admin.ModelAdmin, CountryFilterMixin):
     ]
 
   list_display = [
-    'id', 'created_date', 'name', 'organization__name', 'applied_count', # fix: CIDADE, PONTUAL OU RECORRENTE
+    'id', 'modified_date', 'name', 'organization__name', 'applied_count', # fix: CIDADE, PONTUAL OU RECORRENTE
     'highlighted', 'published', 'closed', 'deleted', #fix: EMAIL STATUS
     ]
 
